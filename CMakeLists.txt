@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 
-add_subdirectory(faceLandmarks)
+#add_subdirectory(faceLandmarks)
+add_subdirectory(yarpOpenFace)
 
 icubcontrib_add_uninstall_target()
-

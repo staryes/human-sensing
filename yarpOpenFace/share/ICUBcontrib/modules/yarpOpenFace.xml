@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="yarpmanifest.xsl"?>
+
+<module>
+
+   <name>yarpOpenFace</name>
+   <description>This module is configured to find human faces that are looking more or less towards the camera.</description>
+   <copypolicy>Released under the terms of the GNU GPL v2.0</copypolicy>
+   <version>1.0</version>
+
+   <description-long>
+       This module is configured to find human face using the open-source dlib library. It detect human faces that are looking more or less towards the camera. It makes use of the dlib library in order to extract the facial landmarks and uses the now classic Histogram of Oriented Gradients (HOG) feature combined with a linear classifier, an image pyramid, and sliding window detection scheme.
+
+   \image html yarpOpenFace.png "yarpOpenFace at work"
+   </description-long>
+   
+   <arguments>
+        <param default="yarpOpenFace" desc="To specify the module's name; all the open ports will be tagged with the prefix /name">name</param>
+        <param default="yarpOpenFace.ini" desc="Configuration file name">from</param>   
+   </arguments>
+
+   <authors>
+       <author email="vadim.tikhanoff@iit.it"> Vadim Tikhanoff </author>
+   </authors>
+
+   <data>
+       <input>
+           <type>Image</type>
+           <port>/yarpOpenFace/image:i</port>
+           <required>no</required>
+           <priority>no</priority>
+           <description>
+            Receives stream of camera images.
+           </description>
+       </input>
+       <output>
+           <type>Image</type>
+           <port>/yarpOpenFace/image:o</port>
+           <description>
+            Stream out an image with the result of the face extraction.
+           </description>
+       </output>
+       <output>
+           <type>yarp::os::Bottle</type>
+           <port>/yarpOpenFace/target:o</port>
+           <description>
+            Stream out a yarp list containing the faces bounding box, in descending order.
+           </description>
+       </output>
+       <output>
+           <type>yarp::os::Bottle</type>
+           <port>/yarpOpenFace/yarpOpenFace:o</port>
+           <description>
+            Stream out a yarp list containing the landmarks information.
+           </description>
+       </output>
+   </data>
+
+   <services>
+       <server>
+           <type>yarpOpenFace_IDLServer</type>
+           <idl>yarpOpenFace.thrift</idl>
+           <port>/yarpOpenFace/rpc:i</port>
+           <description>service port</description>
+       </server>
+   </services>
+
+</module>
