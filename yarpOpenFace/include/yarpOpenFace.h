@@ -115,6 +115,15 @@ private:
 
     //void    drawLandmarks(cv::Mat &mat, const dlib::full_object_detection &d);
 
+    //========================
+    LandmarkDetector::FaceModelParameters det_parameters;
+    LandmarkDetector::CLNF              face_model;
+	FaceAnalysis::FaceAnalyserParameters face_analysis_params;
+    FaceAnalysis::FaceAnalyser          face_analyser;
+	cv::CascadeClassifier               classifier;
+	dlib::frontal_face_detector         face_detector_hog;
+	LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn;
+//===================================
 public:
     /**
      * constructor

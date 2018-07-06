@@ -20,7 +20,7 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/human-sensing/yarpOpenFace/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/human-sensing-staryes/yarpOpenFace/cmake/modules/")
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 set(CMAKE_CONFIG_DIR etc/OpenFace)
