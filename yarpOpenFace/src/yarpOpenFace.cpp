@@ -211,28 +211,11 @@ bool FACEManager::open()
 
     //yDebug() << "path is: " << predictorFile.c_str();
 
-//============================================================
-    LandmarkDetector::FaceModelParameters det_parameters;
-
-    // The modules that are being used for tracking
-    cout << "Loading the model" << endl;
-    LandmarkDetector::CLNF face_model(det_parameters.model_location);
-
-    cout << "Model loaded" << endl;
-
-	// Load facial feature extractor and AU analyser (make sure it is static)
-	FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
-    face_analysis_params.OptimizeForImages();
-	FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
-
-	// If bounding boxes not provided, use a face detector
-	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
-	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
-	LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
-    //=====================================================
-
     //faceDetector = dlib::get_frontal_face_detector();
     //dlib::deserialize(predictorFile.c_str()) >> sp;
+
+    FACEModels fms;
+    //fms.isModelsLoaded = fms.loadModels();
 
     color = cv::Scalar( 0, 255, 0 );
 
@@ -285,7 +268,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 //-------------------------
 // Load the models
 
-    LandmarkDetector::FaceModelParameters det_parameters;
+    LandmarkDetector::FaceModelParameters det_parameters; //test
 
     // The modules that are being used for tracking
     cout << "Loading the model" << endl;
@@ -666,3 +649,20 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 
 // }
 //empty line to make gcc happy
+
+// bool FACEModels::loadModels(void)
+// {
+//     FACEModels fms;
+//     fms.face_model(fms.det_parameters);
+
+//     return 1;
+// }
+
+FACEModels::FACEModels()
+{
+
+}
+
+FACEModels::~FACEModels()
+{
+}

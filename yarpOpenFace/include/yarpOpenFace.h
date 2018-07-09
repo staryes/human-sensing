@@ -17,7 +17,6 @@
 
 #ifndef __YARP_OPENFACE_H__
 #define __YARP_OPENFACE_H__
-
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/RFModule.h>
 #include <yarp/os/Network.h>
@@ -115,15 +114,6 @@ private:
 
     //void    drawLandmarks(cv::Mat &mat, const dlib::full_object_detection &d);
 
-    //========================
-    LandmarkDetector::FaceModelParameters det_parameters;
-    LandmarkDetector::CLNF              face_model;
-	FaceAnalysis::FaceAnalyserParameters face_analysis_params;
-    FaceAnalysis::FaceAnalyser          face_analyser;
-	cv::CascadeClassifier               classifier;
-	dlib::frontal_face_detector         face_detector_hog;
-	LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn;
-//===================================
 public:
     /**
      * constructor
@@ -181,6 +171,34 @@ public:
      * function that handles an IDL message - quit
      */
     bool quit();
+};
+
+
+using namespace LandmarkDetector;
+class FACEModels: public FaceModelParameters, public CLNF
+{
+
+public:
+    //FACEModels();
+    //~FACEModels();
+
+    FaceModelParameters det_parameters; //test
+
+    // The modules that are being used for tracking
+//    cout << "Loading the model" << endl;
+    CLNF face_model(string model_location);
+
+//    cout << "Model loaded" << endl;
+
+	/* // Load facial feature extractor and AU analyser (make sure it is static) */
+	/* FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp"); */
+    /* face_analysis_params.OptimizeForImages(); */
+	/* FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params); */
+
+	/* // If bounding boxes not provided, use a face detector */
+	/* cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location); */
+	/* dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector(); */
+	/* LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location) */;
 };
 
 #endif
