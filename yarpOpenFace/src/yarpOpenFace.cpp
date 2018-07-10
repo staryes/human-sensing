@@ -214,8 +214,30 @@ bool FACEManager::open()
     //faceDetector = dlib::get_frontal_face_detector();
     //dlib::deserialize(predictorFile.c_str()) >> sp;
 
-    FACEModels fms;
+//   FACEModels fms;
     //fms.isModelsLoaded = fms.loadModels();
+    LandmarkDetector::FaceModelParameters det_parameters; //test
+    p_det_parameters = det_parameters;
+
+    // The modules that are being used for tracking
+    cout << "Loading the model" << endl;
+    LandmarkDetector::CLNF face_model(p_det_parameters.model_location);
+    p_face_model = face_model;
+
+    cout << "Model loaded" << endl;
+
+	// Load facial feature extractor and AU analyser (make sure it is static)
+    //FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
+    //face_analysis_params.OptimizeForImages();
+
+//	FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
+//    p_face_analyser = &face_analyser;
+
+	// If bounding boxes not provided, use a face detector
+//	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
+//	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
+    LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
+    p_face_detector_mtcnn = face_detector_mtcnn;
 
     color = cv::Scalar( 0, 255, 0 );
 
@@ -268,29 +290,29 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 //-------------------------
 // Load the models
 
-    LandmarkDetector::FaceModelParameters det_parameters; //test
+//     LandmarkDetector::FaceModelParameters det_parameters; //test
 
-    // The modules that are being used for tracking
-    cout << "Loading the model" << endl;
-    LandmarkDetector::CLNF face_model(det_parameters.model_location);
+//     // The modules that are being used for tracking
+//     cout << "Loading the model" << endl;
+//     LandmarkDetector::CLNF face_model(det_parameters.model_location);
 
-    cout << "Model loaded" << endl;
+//     cout << "Model loaded" << endl;
 
-	// Load facial feature extractor and AU analyser (make sure it is static)
-	FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
+// 	// Load facial feature extractor and AU analyser (make sure it is static)
+ 	FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
     face_analysis_params.OptimizeForImages();
-	FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
+    static FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
 
-	// If bounding boxes not provided, use a face detector
-	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
-	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
-	LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
+// 	// If bounding boxes not provided, use a face detector
+// //	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
+// //	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
+// 	LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
 
 // If can't find MTCNN face detector, default to HOG one
-    if (det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::MTCNN_DETECTOR && face_detector_mtcnn.empty())
+    if (p_det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::FaceDetector::MTCNN_DETECTOR && p_face_detector_mtcnn.empty())
     {
         cout << "INFO: defaulting to HOG-SVM face detector" << endl;
-        det_parameters.curr_face_detector = LandmarkDetector::FaceModelParameters::HOG_SVM_DETECTOR;
+        p_det_parameters.curr_face_detector = LandmarkDetector::FaceModelParameters::FaceDetector::HOG_SVM_DETECTOR;
     }
 
     // A utility for visualizing the results
@@ -306,14 +328,14 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
     float cx = imgMat.rows/2;
     float cy = imgMat.cols/2;
 
-    if (!face_model.eye_model)
+    if (!p_face_model.eye_model)
 	{
 		cout << "WARNING: no eye model found" << endl;
 	}
 
 	if (face_analyser.GetAUClassNames().size() == 0 && face_analyser.GetAUClassNames().size() == 0)
 	{
-		cout << "WARNING: no Action Unit models found" << endl;
+        //	cout << "WARNING: no Action Unit models found" << endl;
 	}
 
 	cout << "Starting tracking" << endl;
@@ -324,7 +346,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 
 		Utilities::RecorderOpenFaceParameters recording_params(false, false, false, false, false, false,false, false, false, false, false, false, fx, fy, cx, cy, 30);
 
-		if (!face_model.eye_model)
+		if (!p_face_model.eye_model)
 		{
 			recording_params.setOutputGaze(false);
 		}
@@ -346,19 +368,19 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		}
 		//else
 		{
-			if (det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::HOG_SVM_DETECTOR)
+//			if (det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::HOG_SVM_DETECTOR)
+			{
+//				vector<float> confidences;
+//				LandmarkDetector::DetectFacesHOG(face_detections, grayscale_image, face_detector_hog, confidences);
+			}
+//			else if (det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::HAAR_DETECTOR)
+			{
+//				LandmarkDetector::DetectFaces(face_detections, grayscale_image, classifier);
+			}
+//			else
 			{
 				vector<float> confidences;
-				LandmarkDetector::DetectFacesHOG(face_detections, grayscale_image, face_detector_hog, confidences);
-			}
-			else if (det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::HAAR_DETECTOR)
-			{
-				LandmarkDetector::DetectFaces(face_detections, grayscale_image, classifier);
-			}
-			else
-			{
-				vector<float> confidences;
-				LandmarkDetector::DetectFacesMTCNN(face_detections, rgb_image, face_detector_mtcnn, confidences);
+				LandmarkDetector::DetectFacesMTCNN(face_detections, rgb_image, p_face_detector_mtcnn, confidences);
 			}
 		}
 
@@ -369,20 +391,20 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		{
 
 			// if there are multiple detections go through them
-			bool success = LandmarkDetector::DetectLandmarksInImage(rgb_image, face_detections[face], face_model, det_parameters, grayscale_image);
+			bool success = LandmarkDetector::DetectLandmarksInImage(rgb_image, face_detections[face], p_face_model, p_det_parameters, grayscale_image);
 
 			// Estimate head pose and eye gaze
-			cv::Vec6d pose_estimate = LandmarkDetector::GetPose(face_model, fx, fy, cx, cy);
+			cv::Vec6d pose_estimate = LandmarkDetector::GetPose(p_face_model, fx, fy, cx, cy);
 
 			// Gaze tracking, absolute gaze direction
 			cv::Point3f gaze_direction0(0, 0, -1);
 			cv::Point3f gaze_direction1(0, 0, -1);
 			cv::Vec2f gaze_angle(0, 0);
 
-			if (face_model.eye_model)
+			if (p_face_model.eye_model)
 			{
-				GazeAnalysis::EstimateGaze(face_model, gaze_direction0, fx, fy, cx, cy, true);
-				GazeAnalysis::EstimateGaze(face_model, gaze_direction1, fx, fy, cx, cy, false);
+				GazeAnalysis::EstimateGaze(p_face_model, gaze_direction0, fx, fy, cx, cy, true);
+				GazeAnalysis::EstimateGaze(p_face_model, gaze_direction1, fx, fy, cx, cy, false);
 				gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0, gaze_direction1);
 			}
 
@@ -390,9 +412,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 			cv::Mat_<double> hog_descriptor; int num_hog_rows = 0, num_hog_cols = 0;
 
 			// Perform AU detection and HOG feature extraction, as this can be expensive only compute it if needed by output or visualization
-			if (recording_params.outputAlignedFaces() || recording_params.outputHOG() || recording_params.outputAUs() || visualizer.vis_align || visualizer.vis_hog)
+			//if (recording_params.outputAlignedFaces() || recording_params.outputHOG() || recording_params.outputAUs() || visualizer.vis_align || visualizer.vis_hog)
 			{
-				face_analyser.PredictStaticAUsAndComputeFeatures(rgb_image, face_model.detected_landmarks);
+				face_analyser.PredictStaticAUsAndComputeFeatures(rgb_image, p_face_model.detected_landmarks);
 				face_analyser.GetLatestAlignedFace(sim_warped_img);
 				face_analyser.GetLatestHOG(hog_descriptor, num_hog_rows, num_hog_cols);
 			}
@@ -400,9 +422,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 			// Displaying the tracking visualizations
 			visualizer.SetObservationFaceAlign(sim_warped_img);
 			visualizer.SetObservationHOG(hog_descriptor, num_hog_rows, num_hog_cols);
-			visualizer.SetObservationLandmarks(face_model.detected_landmarks, 1.0, face_model.GetVisibilities()); // Set confidence to high to make sure we always visualize
+			visualizer.SetObservationLandmarks(p_face_model.detected_landmarks, 1.0, p_face_model.GetVisibilities()); // Set confidence to high to make sure we always visualize
 			visualizer.SetObservationPose(pose_estimate, 1.0);
-			visualizer.SetObservationGaze(gaze_direction0, gaze_direction1, LandmarkDetector::CalculateAllEyeLandmarks(face_model), LandmarkDetector::Calculate3DEyeLandmarks(face_model, fx, fy, cx, cy), face_model.detection_certainty);
+			visualizer.SetObservationGaze(gaze_direction0, gaze_direction1, LandmarkDetector::CalculateAllEyeLandmarks(p_face_model), LandmarkDetector::Calculate3DEyeLandmarks(p_face_model, fx, fy, cx, cy), p_face_model.detection_certainty);
 			visualizer.SetObservationActionUnits(face_analyser.GetCurrentAUsReg(), face_analyser.GetCurrentAUsClass());
 
 			// Setting up the recorder output
@@ -658,11 +680,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 //     return 1;
 // }
 
-FACEModels::FACEModels()
-{
+// FACEModels::FACEModels()
+// {
 
-}
+// }
 
-FACEModels::~FACEModels()
-{
-}
+// FACEModels::~FACEModels()
+// {
+// }
