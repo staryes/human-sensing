@@ -299,9 +299,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 //     cout << "Model loaded" << endl;
 
 // 	// Load facial feature extractor and AU analyser (make sure it is static)
- 	FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
-    face_analysis_params.OptimizeForImages();
-    static FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
+// 	FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
+//    face_analysis_params.OptimizeForImages();
+//    static FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
 
 // 	// If bounding boxes not provided, use a face detector
 // //	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
@@ -316,7 +316,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
     }
 
     // A utility for visualizing the results
-    Utilities::Visualizer visualizer(true, true, true, true);
+    Utilities::Visualizer visualizer(false, false, false, false);
 
 
     cv::Mat rgb_image;
@@ -333,12 +333,12 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 		cout << "WARNING: no eye model found" << endl;
 	}
 
-	if (face_analyser.GetAUClassNames().size() == 0 && face_analyser.GetAUClassNames().size() == 0)
+	//if (face_analyser.GetAUClassNames().size() == 0 && face_analyser.GetAUClassNames().size() == 0)
 	{
         //	cout << "WARNING: no Action Unit models found" << endl;
 	}
 
-	cout << "Starting tracking" << endl;
+	//cout << "Starting tracking" << endl;
 
 	if (!rgb_image.empty())
 	{
@@ -414,9 +414,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 			// Perform AU detection and HOG feature extraction, as this can be expensive only compute it if needed by output or visualization
 			//if (recording_params.outputAlignedFaces() || recording_params.outputHOG() || recording_params.outputAUs() || visualizer.vis_align || visualizer.vis_hog)
 			{
-				face_analyser.PredictStaticAUsAndComputeFeatures(rgb_image, p_face_model.detected_landmarks);
-				face_analyser.GetLatestAlignedFace(sim_warped_img);
-				face_analyser.GetLatestHOG(hog_descriptor, num_hog_rows, num_hog_cols);
+                //			face_analyser.PredictStaticAUsAndComputeFeatures(rgb_image, p_face_model.detected_landmarks);
+                //	face_analyser.GetLatestAlignedFace(sim_warped_img);
+                //	face_analyser.GetLatestHOG(hog_descriptor, num_hog_rows, num_hog_cols);
 			}
 
 			// Displaying the tracking visualizations
@@ -425,7 +425,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 			visualizer.SetObservationLandmarks(p_face_model.detected_landmarks, 1.0, p_face_model.GetVisibilities()); // Set confidence to high to make sure we always visualize
 			visualizer.SetObservationPose(pose_estimate, 1.0);
 			visualizer.SetObservationGaze(gaze_direction0, gaze_direction1, LandmarkDetector::CalculateAllEyeLandmarks(p_face_model), LandmarkDetector::Calculate3DEyeLandmarks(p_face_model, fx, fy, cx, cy), p_face_model.detection_certainty);
-			visualizer.SetObservationActionUnits(face_analyser.GetCurrentAUsReg(), face_analyser.GetCurrentAUsClass());
+            //	visualizer.SetObservationActionUnits(face_analyser.GetCurrentAUsReg(), face_analyser.GetCurrentAUsClass());
 
 			// Setting up the recorder output
 			// open_face_rec.SetObservationHOG(face_model.detection_success, hog_descriptor, num_hog_rows, num_hog_cols, 31); // The number of channels in HOG is fixed at the moment, as using FHOG
