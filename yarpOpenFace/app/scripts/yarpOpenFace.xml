@@ -1,0 +1,33 @@
+<application>
+    <name>Face Detection Application</name>
+
+     <module>
+        <name>yarpOpenFace</name>
+        <node>localhost</node>
+    </module>
+
+    <module>
+        <name>yarpview</name>
+        <node>localhost</node>
+        <parameters></parameters>
+    </module>
+
+    <module>
+      <name>yarpdev</name>
+      <node>localhost</node>
+      <parameters>--device opencv_grabber</parameters>
+    </module>
+
+    <connection>
+        <from>/grabber</from>
+        <to>/yarpOpenFace/image:i</to>
+        <protocol>fast_tcp</protocol>
+    </connection>
+
+    <connection>
+    <from>/yarpOpenFace/image:o</from>
+    <to>/yarpview/img:i</to>
+    <protocol>fast_tcp</protocol>
+    </connection>
+
+</application>
