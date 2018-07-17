@@ -288,7 +288,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
     // Change to dlib's image format. No memory is copied.
     //dlib::cv_image<dlib::bgr_pixel> dlibimg(imgMat);
 //-------------------------
-
 // If can't find MTCNN face detector, default to HOG one
     if (p_det_parameters.curr_face_detector == LandmarkDetector::FaceModelParameters::FaceDetector::MTCNN_DETECTOR && p_face_detector_mtcnn.empty())
     {

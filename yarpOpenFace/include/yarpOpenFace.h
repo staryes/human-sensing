@@ -105,7 +105,7 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle>                            targetOutPort;          //target port
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
 
-    cv::Mat                             imgMat;
+    cv::Mat                             imgMat
 
     dlib::frontal_face_detector         faceDetector;
     dlib::shape_predictor               sp;
@@ -180,33 +180,6 @@ public:
     bool quit();
 };
 
-
-/* using namespace LandmarkDetector; */
-/* class FACEModels: public FaceModelParameters, public CLNF */
-/* { */
-
-/* public: */
-/*     //FACEModels(); */
-/*     //~FACEModels(); */
-
-/*     FaceModelParameters det_parameters; //test */
-
-/*     // The modules that are being used for tracking */
-/* //    cout << "Loading the model" << endl; */
-/*     CLNF face_model(string model_location); */
-
-/* //    cout << "Model loaded" << endl; */
-
-/* 	/\* // Load facial feature extractor and AU analyser (make sure it is static) *\/ */
-/* 	/\* FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp"); *\/ */
-/*     /\* face_analysis_params.OptimizeForImages(); *\/ */
-/* 	/\* FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params); *\/ */
-
-/* 	/\* // If bounding boxes not provided, use a face detector *\/ */
-/* 	/\* cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location); *\/ */
-/* 	/\* dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector(); *\/ */
-/* 	/\* LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location) *\/; */
-/* }; */
 
 #endif
 //empty line to make gcc happy
