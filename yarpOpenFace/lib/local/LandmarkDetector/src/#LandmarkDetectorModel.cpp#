@@ -56,6 +56,7 @@ using namespace LandmarkDetector;
 // A default constructor
 CLNF::CLNF()
 {
+
 	FaceModelParameters parameters;
 
 	// A successful read wil set this to true

@@ -93,81 +93,81 @@ bool FACEModule::attach(yarp::os::RpcServer &source)
 }
 
 /**********************************************************/
-// bool FACEModule::display(const std::string& element, const std::string& value)
-// {
-//     bool returnVal = false;
+bool FACEModule::display(const std::string& element, const std::string& value)
+{
+    bool returnVal = false;
 
-//     if (element == "landmarks" || element == "points" || element == "labels" || element == "dark-mode")
-//     {
-//         if (element == "landmarks")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayLandmarks=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayLandmarks = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for landmarks";
-//         }
-//         if (element == "points")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayPoints=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayPoints = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for points";
-//         }
-//         if (element == "labels")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayLabels=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayLabels = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for labels";
-//         }
-//         if (element == "dark-mode")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayDarkMode=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayDarkMode = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for darkMode";
-//         }
-//         //yInfo() << "should now display \"landmarks\" " << faceManager->displayLandmarks << "\"points\"" << faceManager->displayPoints << "\"labels\"" << faceManager->displayLabels  << "\"dark-mode\"" << faceManager->displayDarkMode;
-//     }
-//     else
-//     {
-//         returnVal = false;
-//         yInfo() << "Error in display request";
-//     }
-//     return returnVal;
-// }
+    if (element == "landmarks" || element == "points" || element == "labels" || element == "dark-mode")
+    {
+        if (element == "landmarks")
+        {
+            if (value=="on")
+            {
+                faceManager->displayLandmarks=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayLandmarks = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for landmarks";
+        }
+        if (element == "points")
+        {
+            if (value=="on")
+            {
+                faceManager->displayPoints=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayPoints = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for points";
+        }
+        if (element == "labels")
+        {
+            if (value=="on")
+            {
+                faceManager->displayLabels=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayLabels = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for labels";
+        }
+        if (element == "dark-mode")
+        {
+            if (value=="on")
+            {
+                faceManager->displayDarkMode=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayDarkMode = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for darkMode";
+        }
+        //yInfo() << "should now display \"landmarks\" " << faceManager->displayLandmarks << "\"points\"" << faceManager->displayPoints << "\"labels\"" << faceManager->displayLabels  << "\"dark-mode\"" << faceManager->displayDarkMode;
+    }
+    else
+    {
+        returnVal = false;
+        yInfo() << "Error in display request";
+    }
+    return returnVal;
+}
 
 /**********************************************************/
 bool FACEModule::quit()
@@ -209,13 +209,6 @@ bool FACEManager::open()
     outLandmarksPortName = "/" + moduleName + "/landmarks:o";
     landmarksOutPort.open( outLandmarksPortName.c_str() );
 
-    outImgLefteyePortName = "/" + moduleName + "/image:lefteye";
-    imageOutLefteyePort.open(outImgLefteyePortName.c_str() );
-
-    outImgRighteyePortName = "/" + moduleName + "/image:righteye";
-    imageOutRighteyePort.open(outImgRighteyePortName.c_src() );
-
-
     //yDebug() << "path is: " << predictorFile.c_str();
 
     //faceDetector = dlib::get_frontal_face_detector();
@@ -246,7 +239,7 @@ bool FACEManager::open()
     LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
     p_face_detector_mtcnn = face_detector_mtcnn;
 
-    //color = cv::Scalar( 0, 255, 0 );
+    color = cv::Scalar( 0, 255, 0 );
 
     displayLandmarks = true;
     displayPoints = false;
@@ -355,13 +348,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img)
 
 			// if there are multiple detections go through them
 			bool success = LandmarkDetector::DetectLandmarksInImage(rgb_image, face_detections[face], p_face_model, p_det_parameters, grayscale_image);
-
-            cv::Mat leftEye;
-            cv::Mat RightEye;
-            int eye_region_width;
-            int eye_region_height;
-            int eye_region_top;
-
 
 			// Estimate head pose and eye gaze
 			cv::Vec6d pose_estimate = LandmarkDetector::GetPose(p_face_model, fx, fy, cx, cy);
