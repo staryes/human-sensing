@@ -293,6 +293,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     yarp::sig::ImageOf<yarp::sig::PixelRgb> &outLefteyeImg =
         imageOutLefteyePort.prepare();
 
+    // Get the image from the yarp port
+    imgMat = cv::cvarrToMat((IplImage *)img.getIplImage());
+
     // dlib::cv_image<dlib::bgr_pixel> dlibimg(imgMat);
     //-------------------------
     // If can't find MTCNN face detector, default to HOG one
