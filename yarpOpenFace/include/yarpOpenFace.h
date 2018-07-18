@@ -110,7 +110,7 @@ private:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
 
 
-    cv::Mat                             imgMat
+    cv::Mat                             imgMat;
 
     //dlib::frontal_face_detector         faceDetector;
     //dlib::shape_predictor               sp;

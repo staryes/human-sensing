@@ -391,7 +391,7 @@ namespace CppInterop {
 				
 				auto landmarks_3D = gcnew List<System::Tuple<float, float, float>^>();
 				
-				for(int i = 0; i < shape3D.cols; ++i) 
+				for(int i = 0; i < shape3D.cols; ++i)
 				{
 					landmarks_3D->Add(gcnew System::Tuple<float, float, float>(shape3D.at<float>(0, i), shape3D.at<float>(1, i), shape3D.at<float>(2, i)));
 				}

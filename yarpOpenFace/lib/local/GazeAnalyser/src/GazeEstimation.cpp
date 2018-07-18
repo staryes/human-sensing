@@ -84,7 +84,7 @@ cv::Point3f GazeAnalysis::GetPupilPosition(cv::Mat_<float> eyeLdmks3d)
 
 	cv::Point3f p (mean(irisLdmks3d.col(0))[0], mean(irisLdmks3d.col(1))[0], mean(irisLdmks3d.col(2))[0]);
 
-    std::cout << "pupil position: " << p.x << " " << p.y << " " << p.z << endl; //test print
+    //std::cout << "pupil position: " << p.x << " " << p.y << " " << p.z << endl; //test print
 
 	return p;
 }

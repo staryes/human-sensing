@@ -635,7 +635,7 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, FaceModelParameters& pa
 	bool fit_success = Fit(gray_image_flt, params.window_sizes_current, params);
 
 	// Store the landmarks converged on in detected_landmarks
-	pdm.CalcShape2D(detected_landmarks, params_local, params_global);
+    pdm.CalcShape2D(detected_landmarks, params_local, params_global);
 
 	if(params.refine_hierarchical && hierarchical_models.size() > 0)
 	{

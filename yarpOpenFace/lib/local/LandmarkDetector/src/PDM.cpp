@@ -207,7 +207,7 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, const cv::Rect_<float>& bound
 	// Get the width of expected shape
 	double min_x;
 	double max_x;
-	cv::minMaxLoc(rotated_shape.row(0), &min_x, &max_x);	
+	cv::minMaxLoc(rotated_shape.row(0), &min_x, &max_x);
 
 	double min_y;
 	double max_y;
@@ -222,7 +222,7 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, const cv::Rect_<float>& bound
 	float tx = bounding_box.x + bounding_box.width / 2;
 	float ty = bounding_box.y + bounding_box.height / 2;
 
-	// Correct it so that the bounding box is just around the minimum and maximum point in the initialised face	
+	// Correct it so that the bounding box is just around the minimum and maximum point in the initialised face
 	tx = tx - scaling * (min_x + max_x)/2.0f;
     ty = ty - scaling * (min_y + max_y)/2.0f;
 

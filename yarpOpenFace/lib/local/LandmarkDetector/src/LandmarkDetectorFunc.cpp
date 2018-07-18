@@ -421,7 +421,7 @@ bool DetectLandmarksInImageMultiHypBasic(const cv::Mat_<uchar> &grayscale_image,
 	params.window_sizes_current = params.window_sizes_init;
 
 	// Store the current best estimate
-	float best_likelihood;
+    float best_likelihood;
 	float best_detection_certainty;
 	cv::Vec6f best_global_parameters;
 	cv::Mat_<float> best_local_parameters;
