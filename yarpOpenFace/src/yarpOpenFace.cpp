@@ -313,8 +313,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     cv::Mat rgb_image;
 
-//    cv::Mat leftEye;
-//    cv::Mat rightEye;
+    cv::Mat leftEye;
+    cv::Mat rightEye;
 
     rgb_image = imgMat;
 
@@ -379,51 +379,67 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // std::cout << "size: " << s.height << "," << s.width << endl;
             // for( int i=0; i < landmarks_2D)
 
-            // int righteye_region_width =
-            //     landmarks_2D[39][0] - landmarks_2D[36][0];
-            // int righteye_region_height = 0.5 * righteye_region_width;
-            //     //landmarks_2D[41][1] - landmarks_2D[37][1];
-            // int righteye_region_top =
-            //     landmarks_2D[37][1] - 0.5 * righteye_region_height;
-            // int righteye_region_left =
-            //     landmarks_2D[36][0] - 0.5 * righteye_region_width;
+            int righteye_region_width =
+                landmarks_2D[39][0] - landmarks_2D[36][0];
+            int righteye_region_height = 0.5 * righteye_region_width;
 
-            // righteye_region_width = righteye_region_width * 2;
-            // righteye_region_height = righteye_region_height * 2;
+            int mean_y = 0;
+            for (int i = 0; i < 6; i++)
+                mean_y += landmarks_2D[36 + i][1];
+            mean_y = mean_y / 6;
+
+            int righteye_region_center_y = mean_y;
+
+            int mean_x = 0;
+            for (int i = 0; i < 6; i++)
+                mean_x += landmarks_2D[36 + i][0];
+            mean_x = mean_x / 6;
+
+            int righteye_region_center_x = mean_x;
+
+            righteye_region_width = righteye_region_width * 2;
+            righteye_region_height = righteye_region_height * 2;
+
+            //            std::cout << "eye corner 1: " << landmarks_2D[36][0]
+            //            << ","
+            //                      << landmarks_2D[36][1] << endl;
+
+            cv::Rect roi;
+            roi.x = righteye_region_center_x - 0.5 * righteye_region_width;
+            roi.y = righteye_region_center_y - 0.5 * righteye_region_height;
+            roi.width = righteye_region_width;
+            roi.height = righteye_region_height;
+
+            rightEye = rgb_image(roi);
+
+            int lefteye_region_width =
+                landmarks_2D[45][0] - landmarks_2D[42][0];
+            int lefteye_region_height = 0.5 * lefteye_region_width;
+
+            mean_y = 0;
+            for (int i = 0; i < 6; i++)
+                mean_y += landmarks_2D[42 + i][1];
+            mean_y = mean_y / 6;
+
+            int lefteye_region_center_y = mean_y;
+
+            mean_x = 0;
+            for (int i = 0; i < 6; i++)
+                mean_x += landmarks_2D[42 + i][0];
+            mean_x = mean_x / 6;
+
+            int lefteye_region_center_x = mean_x;
+
+            lefteye_region_width = lefteye_region_width * 2;
+            lefteye_region_height = lefteye_region_height * 2;
 
             // cv::Rect roi;
-            // roi.x = righteye_region_top;
-            // roi.y = righteye_region_left;
-            // roi.width = righteye_region_width;
-            // roi.height = righteye_region_height;
+            roi.x = lefteye_region_center_x - 0.5 * lefteye_region_width;
+            roi.y = lefteye_region_center_y - 0.5 * lefteye_region_height;
+            roi.width = lefteye_region_width;
+            roi.height = lefteye_region_height;
 
-            // rightEye = rgb_image(roi);
-
-            // int lefteye_region_width =
-            //     landmarks_2D[45][0] - landmarks_2D[42][0];
-            // int lefteye_region_height =
-            //     landmarks_2D[47][1] - landmarks_2D[43][1];
-            // int lefteye_region_top =
-            //     landmarks_2D[43][1] - 0.5 * lefteye_region_height;
-            // int lefteye_region_left =
-            //     landmarks_2D[42][0] - 0.5 * lefteye_region_width;
-
-            // std::cout << lefteye_region_width << endl;
-
-            // lefteye_region_width = lefteye_region_width * 2;
-            // lefteye_region_height = lefteye_region_height * 2;
-
-//            roi.x = lefteye_region_top;
-            //          roi.y = lefteye_region_left;
-            // roi.width = lefteye_region_width;
-            // roi.height = lefteye_region_height;
-
-            // leftEye = rgb_image(roi);
-            //   std::cout << "eyeWidth = " << leftEye.empty() << endl;
-            // if(leftEye.empty() == 0)
-            {
-                //  cv::imshow("crop", leftEye);
-            }
+            leftEye = rgb_image(roi);
 
             // Estimate head pose and eye gaze
             cv::Vec6d pose_estimate =
@@ -480,12 +496,21 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     imageOutPort.write();
 
-    //  IplImage yarpRighteyeImg;
-    //  if (rightEye.empty() == 0){
-        //       yarpRighteyeImg = rightEye;
-        // outRighteyeImg.resize(yarpRighteyeImg.width, yarpRighteyeImg.height);
-        // cvCopy(&yarpRighteyeImg, (IplImage *)outRighteyeImg.getIplImage());
-        // imageOutRighteyePort.write();
-//    }
+    IplImage yarpRighteyeImg;
+    if (rightEye.empty() == 0) {
+        yarpRighteyeImg = rightEye;
+        outRighteyeImg.resize(yarpRighteyeImg.width, yarpRighteyeImg.height);
+        cvCopy(&yarpRighteyeImg, (IplImage *)outRighteyeImg.getIplImage());
+        imageOutRighteyePort.write();
+    }
+
+    IplImage yarpLefteyeImg;
+    if (leftEye.empty() == 0) {
+        yarpLefteyeImg = leftEye;
+        outLefteyeImg.resize(yarpLefteyeImg.width, yarpLefteyeImg.height);
+        cvCopy(&yarpLefteyeImg, (IplImage *)outLefteyeImg.getIplImage());
+        imageOutLefteyePort.write();
+    }
+
     mutex.post();
 }
