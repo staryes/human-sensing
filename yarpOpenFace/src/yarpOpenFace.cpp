@@ -319,6 +319,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     rgb_image = imgMat;
 
+
     float fx = 500.0;
     float fy = 500.0;
     float cx = imgMat.rows / 2;
@@ -401,9 +402,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             righteye_region_width = righteye_region_width * 2;
             righteye_region_height = righteye_region_height * 2;
 
-            std::cout << "right eye center: " << righteye_region_center_x << ","
-                      << righteye_region_center_y << endl;
-
             cv::Rect roi;
             roi.x = righteye_region_center_x - 0.5 * righteye_region_width;
             roi.y = righteye_region_center_y - 0.5 * righteye_region_height;
@@ -413,6 +411,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             rightEye = rgb_image(roi);
 
             cv::Point rightPupil = findEyeCenter(rightEye, roi, "Right Eye");
+
+            std::cout << "right eye center: " << righteye_region_center_x << ","
+                      << righteye_region_center_y << endl;
 
             std::cout << "rightPupil: " << rightPupil.x + roi.x << ","
                       << rightPupil.y + roi.y << endl;
@@ -447,6 +448,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             roi.height = lefteye_region_height;
 
             leftEye = rgb_image(roi);
+
+            cv::Point leftPupil = findEyeCenter(leftEye, roi, "Left Eye");
+
+            cv::circle(leftEye, leftPupil, 3, 1234);
 
             // Estimate head pose and eye gaze
             cv::Vec6d pose_estimate =
@@ -493,8 +498,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //			visualizer.ShowObservation(); // XXX turn off the
             // imshows
         }
-    }
 
+    }
     //-------------------------
     IplImage yarpImg = visualizer.GetVisImage();
 
