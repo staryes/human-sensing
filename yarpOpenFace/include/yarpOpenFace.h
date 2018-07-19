@@ -146,6 +146,9 @@ public:
     void    onRead( yarp::sig::ImageOf<yarp::sig::PixelRgb> &img );
     void    interrupt();
     bool    execReq(const yarp::os::Bottle &command, yarp::os::Bottle &reply);
+
+    cv::Point findEyeCenter(cv::Mat eyeROI, cv::Rect eye, std::string debugWindow);
+
 };
 
 class FACEModule:public yarp::os::RFModule, public yarpOpenFace_IDLServer
