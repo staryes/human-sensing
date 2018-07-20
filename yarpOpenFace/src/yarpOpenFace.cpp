@@ -322,8 +322,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     float fx = 500.0;
     float fy = 500.0;
-    float cx = imgMat.rows / 2;
-    float cy = imgMat.cols / 2;
+    float cx = imgMat.cols / 2;
+    float cy = imgMat.rows / 2;
 
     if (!p_face_model.eye_model) {
         cout << "WARNING: no eye model found" << endl;
@@ -420,6 +420,15 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::circle(rightEye, rightPupil, 3, 1234);
 
+            rightPupil.x = rightPupil.x + roi.x;
+            rightPupil.y = rightPupil.y + roi.y;
+
+            //std::cout << part << endl;
+            //for (size_t i = 0; i < p_face_model.hierarchical_models[part] ; ++i)
+            {
+                //cv::circle(rightEye, p_face_model.hierarchical_models[part][i], 1, 2345);
+            }
+
             int lefteye_region_width =
                 landmarks_2D[45][0] - landmarks_2D[42][0];
             int lefteye_region_height = 0.5 * lefteye_region_width;
@@ -453,6 +462,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::circle(leftEye, leftPupil, 3, 1234);
 
+            leftPupil.x = leftPupil.x + roi.x;
+            leftPupil.y = leftPupil.y + roi.y;
+
             // Estimate head pose and eye gaze
             cv::Vec6d pose_estimate =
                 LandmarkDetector::GetPose(p_face_model, fx, fy, cx, cy);
@@ -462,11 +474,20 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point3f gaze_direction1(0, 0, -1);
             cv::Vec2f gaze_angle(0, 0);
 
+            // if (p_face_model.eye_model) {
+            //     GazeAnalysis::EstimateGaze(p_face_model, gaze_direction0, fx,
+            //                                fy, cx, cy, true);
+            //     GazeAnalysis::EstimateGaze(p_face_model, gaze_direction1, fx,
+            //                                fy, cx, cy, false);
+            //     gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
+            //                                             gaze_direction1);
+            // }
+            std::cout << "eye model " << p_face_model.eye_model << endl;
             if (p_face_model.eye_model) {
-                GazeAnalysis::EstimateGaze(p_face_model, gaze_direction0, fx,
+                GazeAnalysis::EstimateGazeR1(p_face_model, leftPupil, gaze_direction1, fx,
+                                             fy, cx, cy, false);
+                GazeAnalysis::EstimateGazeR1(p_face_model, rightPupil, gaze_direction0, fx,
                                            fy, cx, cy, true);
-                GazeAnalysis::EstimateGaze(p_face_model, gaze_direction1, fx,
-                                           fy, cx, cy, false);
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
                                                         gaze_direction1);
             }

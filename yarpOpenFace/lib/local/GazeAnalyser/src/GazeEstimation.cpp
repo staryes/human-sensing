@@ -89,6 +89,26 @@ cv::Point3f GazeAnalysis::GetPupilPosition(cv::Mat_<float> eyeLdmks3d)
 	return p;
 }
 
+cv::Point3f GazeAnalysis::GetPupilPositionR1(cv::Mat_<float> eyeLdmks3d, cv::Point pupil2d, float fx, float fy, float cx, float cy)
+{
+	eyeLdmks3d = eyeLdmks3d.t();
+
+	cv::Mat_<float> irisLdmks3d = eyeLdmks3d.rowRange(0,8);
+
+    float Z = mean(irisLdmks3d.col(2))[0];
+
+    float X = Z * ((pupil2d.x - cx)/fx);
+    float Y = Z * ((pupil2d.y - cy)/fy);
+
+	cv::Point3f p (X, Y, Z);
+
+    std::cout << "pupil position: " <<  mean(irisLdmks3d.col(0))[0] << " " << mean(irisLdmks3d.col(1))[0] << " " <<  mean(irisLdmks3d.col(2))[0] << endl;
+    std::cout << "nwpil position: " << p.x << " " << p.y << " " << p.z << endl; //test print
+    std::cout << "2d: " << pupil2d.x << " " << pupil2d.y << endl;
+
+	return p;
+}
+
 void GazeAnalysis::EstimateGaze(const LandmarkDetector::CLNF& clnf_model, cv::Point3f& gaze_absolute, float fx, float fy, float cx, float cy, bool left_eye)
 {
 	cv::Vec6f headPose = LandmarkDetector::GetPose(clnf_model, fx, fy, cx, cy);
@@ -139,6 +159,58 @@ void GazeAnalysis::EstimateGaze(const LandmarkDetector::CLNF& clnf_model, cv::Po
 
 	gaze_absolute = gazeVecAxis / norm(gazeVecAxis);
 }
+
+void GazeAnalysis::EstimateGazeR1(const LandmarkDetector::CLNF& clnf_model, cv::Point pupil_center, cv::Point3f& gaze_absolute, float fx, float fy, float cx, float cy, bool left_eye)
+{
+	cv::Vec6f headPose = LandmarkDetector::GetPose(clnf_model, fx, fy, cx, cy);
+	cv::Vec3f eulerAngles(headPose(3), headPose(4), headPose(5));
+	cv::Matx33f rotMat = Utilities::Euler2RotationMatrix(eulerAngles);
+
+	int part = -1;
+	for (size_t i = 0; i < clnf_model.hierarchical_models.size(); ++i)
+	{
+		if (left_eye && clnf_model.hierarchical_model_names[i].compare("left_eye_28") == 0)
+		{
+			part = i;
+		}
+		if (!left_eye && clnf_model.hierarchical_model_names[i].compare("right_eye_28") == 0)
+		{
+			part = i;
+		}
+	}
+
+	if (part == -1)
+	{
+		std::cout << "Couldn't find the eye model, something wrong" << std::endl;
+		gaze_absolute = cv::Point3f(0, 0, 0);
+		return;
+	}
+
+	cv::Mat eyeLdmks3d = clnf_model.hierarchical_models[part].GetShape(fx, fy, cx, cy);
+
+	cv::Point3f pupil = GetPupilPositionR1(eyeLdmks3d, pupil_center, fx, fy, cx, cy);
+	cv::Point3f rayDir = pupil / norm(pupil);
+
+	cv::Mat faceLdmks3d = clnf_model.GetShape(fx, fy, cx, cy);
+	faceLdmks3d = faceLdmks3d.t();
+
+	cv::Mat offset = (cv::Mat_<float>(3, 1) << 0, -3.5, 7.0);
+
+	int eyeIdx = 1;
+	if (left_eye)
+	{
+		eyeIdx = 0;
+	}
+
+	cv::Mat eyeballCentreMat = (faceLdmks3d.row(36+eyeIdx*6) + faceLdmks3d.row(39+eyeIdx*6))/2.0f + (cv::Mat(rotMat)*offset).t();
+
+	cv::Point3f eyeballCentre = cv::Point3f(eyeballCentreMat);
+
+	cv::Point3f gazeVecAxis = RaySphereIntersect(cv::Point3f(0,0,0), rayDir, eyeballCentre, 12) - eyeballCentre;
+
+	gaze_absolute = gazeVecAxis / norm(gazeVecAxis);
+}
+
 
 cv::Vec2f GazeAnalysis::GetGazeAngle(cv::Point3f& gaze_vector_1, cv::Point3f& gaze_vector_2)
 {

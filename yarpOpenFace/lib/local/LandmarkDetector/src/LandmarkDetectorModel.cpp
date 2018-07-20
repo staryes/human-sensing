@@ -1210,6 +1210,8 @@ cv::Mat_<float> CLNF::GetShape(float fx, float fy, float cx, float cy) const
 
 	cv::Mat_<float> outShape(n, 3, 0.0f);
 
+    std::cout << "iris marks: " << n << endl;
+
 	// this is described in the paper in section 3.4 (equation 10) (of the CLM-Z paper)
 	for(int i = 0; i < n; i++)
 	{
@@ -1223,6 +1225,9 @@ cv::Mat_<float> CLNF::GetShape(float fx, float fy, float cx, float cy) const
 		outShape.at<float>(i,2) = Z;
 
 	}
+    std::cout << "fxfycxcy " << fx << " " << fy << " " << cx << " " << cy << endl ;
+    std::cout << "image pupil: " << this->detected_landmarks.at<float>(0) << " " << this->detected_landmarks.at<float>(n) << endl ;
+    std::cout << "image pupil 3D: " <<outShape.at<float>(0,0) << " " << outShape.at<float>(0,1) << " " << outShape.at<float>(0,2 )<< endl ;
 
 	// The format is 3 rows - n cols
 	return outShape.t();
