@@ -319,7 +319,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     rgb_image = imgMat;
 
-
     float fx = 500.0;
     float fy = 500.0;
     float cx = imgMat.cols / 2;
@@ -332,18 +331,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     // cout << "Starting tracking" << endl;
 
     if (!rgb_image.empty()) {
-        // std::vector<std::string> argument = "-yarp";
 
-        // Utilities::RecorderOpenFaceParameters recording_params(false, false,
-        // false, false, false,
-        // false,false, false, false, false, false, false, fx, fy, cx, cy, 30);
-
-        // if (!p_face_model.eye_model)
-        {
-            //	recording_params.setOutputGaze(false);
-        }
-        // Utilities::RecorderOpenFace open_face_rec(name, recording_params,
-        // arguments); //XX
         visualizer.SetImage(rgb_image, fx, fy, cx, cy);
 
         // Making sure the image is in uchar grayscale (some face detectors use
@@ -413,7 +401,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point leftPupil = findEyeCenter(leftEye, roi, "Right Eye");
 
             std::cout << "right eye center: " << lefteye_region_center_x << ","
-                      << lefhteye_region_center_y << endl;
+                      << lefteye_region_center_y << endl;
 
             std::cout << "leftPupil: " << leftPupil.x + roi.x << ","
                       << leftPupil.y + roi.y << endl;
@@ -423,10 +411,12 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             leftPupil.x = leftPupil.x + roi.x;
             leftPupil.y = leftPupil.y + roi.y;
 
-            //std::cout << part << endl;
-            //for (size_t i = 0; i < p_face_model.hierarchical_models[part] ; ++i)
+            // std::cout << part << endl;
+            // for (size_t i = 0; i < p_face_model.hierarchical_models[part] ;
+            // ++i)
             {
-                //cv::circle(leftEye, p_face_model.hierarchical_models[part][i], 1, 2345);
+                // cv::circle(leftEye,
+                // p_face_model.hierarchical_models[part][i], 1, 2345);
             }
 
             int rightlefteye_region_width =
@@ -435,8 +425,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             mean_y = 0;
             mean_x = 0;
-            for (int i = 0; i < 6; i++)
-            {
+            for (int i = 0; i < 6; i++) {
                 mean_y += landmarks_2D[42 + i][1];
                 mean_x += landmarks_2D[42 + i][0];
             }
@@ -450,8 +439,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             rightlefteye_region_height = rightlefteye_region_height * 2;
 
             // cv::Rect roi;
-            roi.x = rightlefteye_region_center_x - 0.5 * rightlefteye_region_width;
-            roi.y = rightlefteye_region_center_y - 0.5 * rightlefteye_region_height;
+            roi.x =
+                rightlefteye_region_center_x - 0.5 * rightlefteye_region_width;
+            roi.y =
+                rightlefteye_region_center_y - 0.5 * rightlefteye_region_height;
             roi.width = rightlefteye_region_width;
             roi.height = rightlefteye_region_height;
 
@@ -483,10 +474,12 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // }
             std::cout << "eye model " << p_face_model.eye_model << endl;
             if (p_face_model.eye_model) {
-                GazeAnalysis::EstimateGazeR1(p_face_model, rightPupil, gaze_direction1, fx,
-                                             fy, cx, cy, false);
-                GazeAnalysis::EstimateGazeR1(p_face_model, leftPupil, gaze_direction0, fx,
-                                           fy, cx, cy, true);
+                GazeAnalysis::EstimateGazeR1(p_face_model, rightPupil,
+                                             gaze_direction1, fx, fy, cx, cy,
+                                             false);
+                GazeAnalysis::EstimateGazeR1(p_face_model, leftPupil,
+                                             gaze_direction0, fx, fy, cx, cy,
+                                             true);
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
                                                         gaze_direction1);
             }
@@ -518,7 +511,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //			visualizer.ShowObservation(); // XXX turn off the
             // imshows
         }
-
     }
     //-------------------------
     IplImage yarpImg = visualizer.GetVisImage();
@@ -670,7 +662,7 @@ cv::Point FACEManager::findEyeCenter(cv::Mat rgbeye, cv::Rect eye,
     cv::Mat eyeROI;
     cv::cvtColor(rgbeye, eyeROI, CV_BGR2GRAY);
 
-// cv::Mat eyeROIUnscaled = face(eye);
+    // cv::Mat eyeROIUnscaled = face(eye);
     // cv::Mat eyeROI;
     // scaleToFastSize(eyeROIUnscaled, eyeROI);
     // draw eye region
@@ -756,6 +748,6 @@ cv::Point FACEManager::findEyeCenter(cv::Mat rgbeye, cv::Rect eye,
         // redo max
         cv::minMaxLoc(out, NULL, &maxVal, NULL, &maxP, mask);
     }
-    //return unscalePoint(maxP, eye);
+    // return unscalePoint(maxP, eye);
     return maxP;
 }
