@@ -318,11 +318,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::Point leftPupil = findEyeCenter(leftEye, roi, "Right Eye");
 
-            std::cout << "right eye center: " << lefteye_region_center_x << ","
-                      << lefteye_region_center_y << endl;
+            // std::cout << "left eye center: " << lefteye_region_center_x << ","
+            //           << lefteye_region_center_y << endl;
 
-            std::cout << "leftPupil: " << leftPupil.x + roi.x << ","
-                      << leftPupil.y + roi.y << endl;
+            // std::cout << "leftPupil: " << leftPupil.x + roi.x << ","
+            //           << leftPupil.y + roi.y << endl;
 
             cv::circle(leftEye, leftPupil, 3, 1234);
 
@@ -390,7 +390,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //     gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
             //                                             gaze_direction1);
             // }
-            std::cout << "eye model " << face_model->eye_model << endl;
+            //std::cout << "eye model " << face_model->eye_model << endl;
             if (face_model->eye_model) {
                 GazeAnalysis::EstimateGazeR1(*face_model, rightPupil,
                                              gaze_direction1, fx, fy, cx, cy,
@@ -400,6 +400,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                                              true);
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
                                                         gaze_direction1);
+
+                std::cout << "gaze angle: " << gaze_angle[0] << " " << gaze_angle[1] << endl;
             }
 
             cv::Mat sim_warped_img;
@@ -629,7 +631,7 @@ cv::Point FACEManager::findEyeCenter(cv::Mat rgbeye, cv::Rect eye,
     // Note: these loops are reversed from the way the paper does them
     // it evaluates every possible center for each gradient location instead of
     // every possible gradient location for every center.
-    printf("Eye Size: %ix%i\n", outSum.cols, outSum.rows);
+    //printf("Eye Size: %ix%i\n", outSum.cols, outSum.rows);
     for (int y = 0; y < weight.rows; ++y) {
         const double *Xr = gradientX.ptr<double>(y),
                      *Yr = gradientY.ptr<double>(y);
