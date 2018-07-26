@@ -91,89 +91,6 @@ bool FACEModule::attach(yarp::os::RpcServer &source) {
 }
 
 /**********************************************************/
-// bool FACEModule::display(const std::string& element, const std::string&
-// value)
-// {
-//     bool returnVal = false;
-
-//     if (element == "landmarks" || element == "points" || element == "labels"
-//     || element == "dark-mode")
-//     {
-//         if (element == "landmarks")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayLandmarks=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayLandmarks = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for landmarks";
-//         }
-//         if (element == "points")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayPoints=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayPoints = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for points";
-//         }
-//         if (element == "labels")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayLabels=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayLabels = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for labels";
-//         }
-//         if (element == "dark-mode")
-//         {
-//             if (value=="on")
-//             {
-//                 faceManager->displayDarkMode=true;
-//                 returnVal = true;
-//             }
-//             else if (value=="off")
-//             {
-//                 faceManager->displayDarkMode = false;
-//                 returnVal = true;
-//             }
-//             else
-//                 yInfo() << "error setting value for darkMode";
-//         }
-//         //yInfo() << "should now display \"landmarks\" " <<
-//         faceManager->displayLandmarks << "\"points\"" <<
-//         faceManager->displayPoints << "\"labels\"" <<
-//         faceManager->displayLabels  << "\"dark-mode\"" <<
-//         faceManager->displayDarkMode;
-//     }
-//     else
-//     {
-//         returnVal = false;
-//         yInfo() << "Error in display request";
-//     }
-//     return returnVal;
-// }
-
-/**********************************************************/
 bool FACEModule::quit() {
     closing = true;
     return true;
@@ -224,13 +141,11 @@ bool FACEManager::open() {
 
     //   FACEModels fms;
     // fms.isModelsLoaded = fms.loadModels();
-    LandmarkDetector::FaceModelParameters det_parameters; // test
-    p_det_parameters = det_parameters;
+    det_parameters = new LandmarkDetector::FaceModelParameters();
 
     // The modules that are being used for tracking
     cout << "Loading the model" << endl;
-    LandmarkDetector::CLNF face_model(p_det_parameters.model_location);
-    p_face_model = face_model;
+    face_model = new LandmarkDetector::CLNF(det_parameters->model_location);
 
     cout << "Model loaded" << endl;
 
@@ -246,9 +161,8 @@ bool FACEManager::open() {
     // classifier(det_parameters.haar_face_detector_location);
     //	dlib::frontal_face_detector face_detector_hog =
     // dlib::get_frontal_face_detector();
-    LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(
-        det_parameters.mtcnn_face_detector_location);
-    p_face_detector_mtcnn = face_detector_mtcnn;
+    face_detector_mtcnn = new LandmarkDetector::FaceDetectorMTCNN(
+        det_parameters->mtcnn_face_detector_location);
 
     // color = cv::Scalar( 0, 255, 0 );
 
@@ -263,6 +177,10 @@ bool FACEManager::open() {
 /**********************************************************/
 void FACEManager::close() {
     mutex.wait();
+    yDebug() <<  "now delete detectors...";
+    delete face_detector_mtcnn;
+    delete face_model;
+    delete det_parameters;
     yDebug() << "now closing ports...";
     imageOutPort.writeStrict();
     imageOutPort.close();
@@ -300,12 +218,12 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     // dlib::cv_image<dlib::bgr_pixel> dlibimg(imgMat);
     //-------------------------
     // If can't find MTCNN face detector, default to HOG one
-    if (p_det_parameters.curr_face_detector ==
+    if (det_parameters->curr_face_detector ==
             LandmarkDetector::FaceModelParameters::FaceDetector::
                 MTCNN_DETECTOR &&
-        p_face_detector_mtcnn.empty()) {
+        face_detector_mtcnn->empty()) {
         cout << "INFO: defaulting to HOG-SVM face detector" << endl;
-        p_det_parameters.curr_face_detector = LandmarkDetector::
+        det_parameters->curr_face_detector = LandmarkDetector::
             FaceModelParameters::FaceDetector::HOG_SVM_DETECTOR;
     }
 
@@ -324,7 +242,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     float cx = imgMat.cols / 2;
     float cy = imgMat.rows / 2;
 
-    if (!p_face_model.eye_model) {
+    if (!face_model->eye_model) {
         cout << "WARNING: no eye model found" << endl;
     }
 
@@ -345,7 +263,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
         vector<float> confidences;
         LandmarkDetector::DetectFacesMTCNN(face_detections, rgb_image,
-                                           p_face_detector_mtcnn, confidences);
+                                           *face_detector_mtcnn, confidences);
 
         // Detect landmarks around detected faces
         int face_det = 0;
@@ -354,14 +272,14 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             // if there are multiple detections go through them
             bool success = LandmarkDetector::DetectLandmarksInImage(
-                rgb_image, face_detections[face], p_face_model,
-                p_det_parameters, grayscale_image);
+                rgb_image, face_detections[face], *face_model,
+                *det_parameters, grayscale_image);
 
             // for (int i=0; i<p_face_model.detected_landmarks.size(); i++)
             //    std::cout << p_face_model.detected_landmarks.row[i] << endl;
 
             // 2D points
-            cv::Mat_<float> landmarks_2D = p_face_model.detected_landmarks;
+            cv::Mat_<float> landmarks_2D = face_model->detected_landmarks;
 
             landmarks_2D = landmarks_2D.reshape(1, 2).t();
 
@@ -457,7 +375,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             // Estimate head pose and eye gaze
             cv::Vec6d pose_estimate =
-                LandmarkDetector::GetPose(p_face_model, fx, fy, cx, cy);
+                LandmarkDetector::GetPose(*face_model, fx, fy, cx, cy);
 
             // Gaze tracking, absolute gaze direction
             cv::Point3f gaze_direction0(0, 0, -1);
@@ -472,12 +390,12 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //     gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
             //                                             gaze_direction1);
             // }
-            std::cout << "eye model " << p_face_model.eye_model << endl;
-            if (p_face_model.eye_model) {
-                GazeAnalysis::EstimateGazeR1(p_face_model, rightPupil,
+            std::cout << "eye model " << face_model->eye_model << endl;
+            if (face_model->eye_model) {
+                GazeAnalysis::EstimateGazeR1(*face_model, rightPupil,
                                              gaze_direction1, fx, fy, cx, cy,
                                              false);
-                GazeAnalysis::EstimateGazeR1(p_face_model, leftPupil,
+                GazeAnalysis::EstimateGazeR1(*face_model, leftPupil,
                                              gaze_direction0, fx, fy, cx, cy,
                                              true);
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
@@ -493,17 +411,17 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             visualizer.SetObservationHOG(hog_descriptor, num_hog_rows,
                                          num_hog_cols);
             visualizer.SetObservationLandmarks(
-                p_face_model.detected_landmarks, 1.0,
-                p_face_model.GetVisibilities()); // Set confidence to high to
+                face_model->detected_landmarks, 1.0,
+                face_model->GetVisibilities()); // Set confidence to high to
                                                  // make sure we always
                                                  // visualize
             visualizer.SetObservationPose(pose_estimate, 1.0);
             visualizer.SetObservationGaze(
                 gaze_direction0, gaze_direction1,
-                LandmarkDetector::CalculateAllEyeLandmarks(p_face_model),
-                LandmarkDetector::Calculate3DEyeLandmarks(p_face_model, fx, fy,
+                LandmarkDetector::CalculateAllEyeLandmarks(*face_model),
+                LandmarkDetector::Calculate3DEyeLandmarks(*face_model, fx, fy,
                                                           cx, cy),
-                p_face_model.detection_certainty);
+                face_model->detection_certainty);
             //            	visualizer.SetObservationActionUnits(face_analyser.GetCurrentAUsReg(),
             //            face_analyser.GetCurrentAUsClass());
         }
