@@ -166,6 +166,10 @@ bool FACEManager::open() {
 
     // color = cv::Scalar( 0, 255, 0 );
 
+
+    // Kalman Filter config
+
+
     displayLandmarks = true;
     displayPoints = false;
     displayLabels = false;
@@ -382,6 +386,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point3f gaze_direction1(0, 0, -1);
             cv::Vec2f gaze_angle(0, 0);
 
+            cv::Point3f leftEyeballCentre(0, 0, 0);
+            cv::Point3f rightEyeballCentre(0, 0, 0);
+
             // if (p_face_model.eye_model) {
             //     GazeAnalysis::EstimateGaze(p_face_model, gaze_direction0, fx,
             //                                fy, cx, cy, true);
@@ -393,16 +400,45 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //std::cout << "eye model " << face_model->eye_model << endl;
             if (face_model->eye_model) {
                 GazeAnalysis::EstimateGazeR1(*face_model, rightPupil,
-                                             gaze_direction1, fx, fy, cx, cy,
+                                             gaze_direction1, rightEyeballCentre, fx, fy, cx, cy,
                                              false);
                 GazeAnalysis::EstimateGazeR1(*face_model, leftPupil,
-                                             gaze_direction0, fx, fy, cx, cy,
+                                             gaze_direction0, leftEyeballCentre, fx, fy, cx, cy,
                                              true);
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
                                                         gaze_direction1);
 
                 std::cout << "gaze angle: " << gaze_angle[0] << " " << gaze_angle[1] << endl;
             }
+
+            double baseline = sqrt(pow((leftEyeballCentre.x - rightEyeballCentre.x),2) + pow((leftEyeballCentre.y - rightEyeballCentre.y),2) + pow((leftEyeballCentre.z - rightEyeballCentre.z),2));
+            std::cout << "baseline: " << baseline << endl;
+            std::cout << "left eye ball " << leftEyeballCentre.x << " " << leftEyeballCentre.y << " " << leftEyeballCentre.z << endl;
+            cv::Point3f gaze_direction_abs;
+            std::cout << "left gaze direction " << gaze_direction0.x << " " << gaze_direction0.y << " " << gaze_direction0.z << endl;
+            gaze_direction_abs.z = baseline / ((gaze_direction0.x/gaze_direction0.z)+(gaze_direction1.x/gaze_direction1.z));
+
+            std::cout << gaze_direction_abs.z << endl;
+
+            cv::Point3f gaze_center = (leftEyeballCentre + rightEyeballCentre)/2;
+            cv::Point3f gaze_directionAvg = gaze_direction0 + gaze_direction1;
+            gaze_directionAvg = gaze_directionAvg / norm(gaze_directionAvg);
+            cv::Point3f gaze_point3d = gaze_center + gaze_directionAvg*gaze_center.z;
+
+            std::cout << "gaze point " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
+
+            // transforming the pose w.r.t the root of the robot
+            // igaze->getLeftEyePose(pose_act,ori_act);
+            // H = axis2dcm(ori_act);
+            // H(0,3) = pose_act[0];
+            // H(1,3) = pose_act[1];
+            // H(2,3) = pose_act[2];
+            // pose_clm.resize(4);
+            // pose_clm[0] = pose_estimate_CLM[0] / 1000; //convert to [m]
+            // pose_clm[1] = pose_estimate_CLM[1] / 1000;
+            // pose_clm[2] = pose_estimate_CLM[2] / 1000;
+            // pose_clm[3] = 1;
+            // pose_robot = H*pose_clm;
 
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;

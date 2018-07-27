@@ -93,7 +93,7 @@ namespace Utilities
 		bool vis_aus;
 
 		// Can be adjusted to show less confident frames
-		double visualisation_boundary = 0.4;
+		double visualisation_boundary = 0.2; //0.4
 
 	private:
 

@@ -178,7 +178,7 @@ void GazeAnalysis::EstimateGaze(const LandmarkDetector::CLNF& clnf_model,
 
 void GazeAnalysis::EstimateGazeR1(const LandmarkDetector::CLNF& clnf_model,
                                   cv::Point pupil_center,
-                                  cv::Point3f& gaze_absolute, float fx,
+                                  cv::Point3f& gaze_absolute, cv::Point3f& eyeballCentre, float fx,
                                   float fy, float cx, float cy, bool left_eye) {
   cv::Vec6f headPose = LandmarkDetector::GetPose(clnf_model, fx, fy, cx, cy);
   cv::Vec3f eulerAngles(headPose(3), headPose(4), headPose(5));
@@ -224,7 +224,7 @@ void GazeAnalysis::EstimateGazeR1(const LandmarkDetector::CLNF& clnf_model,
           2.0f +
       (cv::Mat(rotMat) * offset).t();
 
-  cv::Point3f eyeballCentre = cv::Point3f(eyeballCentreMat);
+  eyeballCentre = cv::Point3f(eyeballCentreMat);
 
   cv::Point3f gazeVecAxis =
       RaySphereIntersect(cv::Point3f(0, 0, 0), rayDir, eyeballCentre, 12) -
