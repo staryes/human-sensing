@@ -69,6 +69,7 @@ using namespace std;
 #include <cv.h>
 #include <highgui.h>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/video/tracking.hpp>
 
 /* #include <time.h> */
 /* #include <map> */
@@ -125,6 +126,12 @@ private:
 //    FaceAnalysis::FaceAnalyserParameters p_face_analysis_params;
 //    FaceAnalysis::FaceAnalyser* p_face_analyser;
     LandmarkDetector::FaceDetectorMTCNN* face_detector_mtcnn;
+
+// kalman filter
+    cv::KalmanFilter* kalman;
+    cv::Mat* state;
+    cv::Mat* processNoise;
+    cv::Mat* measurement;
 
 public:
     /**

@@ -168,7 +168,31 @@ bool FACEManager::open() {
 
 
     // Kalman Filter config
+    // 1.kalman filter setup
+    const int stateNum = 4;
+    const int measureNum = 2;
+    kalman = new cv::KalmanFilter(stateNum, measureNum ,0); //state(x,y,deltaX,deltaY)
+    state = new cv::Mat(stateNum, 1, CV_32F);
+    processNoise = new cv::Mat(stateNum, 1, CV_32F);
+    measurement = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
 
+    cv::randn( *state, cv::Scalar::all(0), cv::Scalar::all(0.1) );
+
+    kalman->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
+        // transition matrix
+        1, 0, 1, 0,
+        0, 1, 0, 1,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+        );
+
+    cv::setIdentity(kalman->measurementMatrix, cv::Scalar::all(1));
+    cv::setIdentity(kalman->processNoiseCov, cv::Scalar::all(1e-5));
+    cv::setIdentity(kalman->measurementNoiseCov, cv::Scalar::all(1e-1));
+    cv::setIdentity(kalman->errorCovPost, cv::Scalar::all(1));
+
+    //initialize post state of kalman filter at random
+    cv::randn(kalman->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
 
     displayLandmarks = true;
     displayPoints = false;
@@ -185,6 +209,11 @@ void FACEManager::close() {
     delete face_detector_mtcnn;
     delete face_model;
     delete det_parameters;
+    yDebug() << "now delete KF parameters...";
+    delete kalman;
+    delete state;
+    delete processNoise;
+    delete measurement;
     yDebug() << "now closing ports...";
     imageOutPort.writeStrict();
     imageOutPort.close();
@@ -333,6 +362,29 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             leftPupil.x = leftPupil.x + roi.x;
             leftPupil.y = leftPupil.y + roi.y;
 
+            //Kalman filter
+            //2.kalman filter prediction
+            cv::Mat prediction = kalman->predict();
+            cv::Point2f predictPt = cv::Point2f(prediction.at<float>(0), prediction.at<float>(1));
+
+            //3.update measure
+            measurement->at<float>(0) = (float)leftPupil.x;
+            measurement->at<float>(1) = (float)leftPupil.y;
+
+            //4.update
+            kalman->correct(*measurement);
+//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman->processNoiseCov.at<float>(0, 0))));
+//            *state = kalman->transitionMatrix * *state + *processNoise;
+
+            std::cout << "leftPupil: " << leftPupil.x << ","                      << leftPupil.y << endl;
+//            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
+
+            cv::Point statePt = cv::Point( (int)kalman->statePost.at<float>(0), (int)kalman->statePost.at<float>(1));
+
+            leftPupil = statePt;
+
+            std::cout << "leftPupil: " << leftPupil.x << ","                      << leftPupil.y << endl;
+
             // std::cout << part << endl;
             // for (size_t i = 0; i < p_face_model.hierarchical_models[part] ;
             // ++i)
@@ -402,23 +454,25 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                 GazeAnalysis::EstimateGazeR1(*face_model, rightPupil,
                                              gaze_direction1, rightEyeballCentre, fx, fy, cx, cy,
                                              false);
+
                 GazeAnalysis::EstimateGazeR1(*face_model, leftPupil,
                                              gaze_direction0, leftEyeballCentre, fx, fy, cx, cy,
                                              true);
+
                 gaze_angle = GazeAnalysis::GetGazeAngle(gaze_direction0,
                                                         gaze_direction1);
 
-                std::cout << "gaze angle: " << gaze_angle[0] << " " << gaze_angle[1] << endl;
+                //std::cout << "gaze angle: " << gaze_angle[0] << " " << gaze_angle[1] << endl;
             }
 
             double baseline = sqrt(pow((leftEyeballCentre.x - rightEyeballCentre.x),2) + pow((leftEyeballCentre.y - rightEyeballCentre.y),2) + pow((leftEyeballCentre.z - rightEyeballCentre.z),2));
-            std::cout << "baseline: " << baseline << endl;
-            std::cout << "left eye ball " << leftEyeballCentre.x << " " << leftEyeballCentre.y << " " << leftEyeballCentre.z << endl;
+            //std::cout << "baseline: " << baseline << endl;
+            //std::cout << "left eye ball " << leftEyeballCentre.x << " " << leftEyeballCentre.y << " " << leftEyeballCentre.z << endl;
             cv::Point3f gaze_direction_abs;
-            std::cout << "left gaze direction " << gaze_direction0.x << " " << gaze_direction0.y << " " << gaze_direction0.z << endl;
+            //std::cout << "left gaze direction " << gaze_direction0.x << " " << gaze_direction0.y << " " << gaze_direction0.z << endl;
             gaze_direction_abs.z = baseline / ((gaze_direction0.x/gaze_direction0.z)+(gaze_direction1.x/gaze_direction1.z));
 
-            std::cout << gaze_direction_abs.z << endl;
+            //std::cout << gaze_direction_abs.z << endl;
 
             cv::Point3f gaze_center = (leftEyeballCentre + rightEyeballCentre)/2;
             cv::Point3f gaze_directionAvg = gaze_direction0 + gaze_direction1;
