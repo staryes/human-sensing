@@ -128,10 +128,15 @@ private:
     LandmarkDetector::FaceDetectorMTCNN* face_detector_mtcnn;
 
 // kalman filter
-    cv::KalmanFilter* kalman;
-    cv::Mat* state;
-    cv::Mat* processNoise;
-    cv::Mat* measurement;
+    cv::KalmanFilter* kalman_left;
+    cv::Mat* state_left;
+    //cv::Mat* processNoise;
+    cv::Mat* measurement_left;
+
+    cv::KalmanFilter* kalman_right;
+    cv::Mat* state_right;
+    //cv::Mat* processNoise;
+    cv::Mat* measurement_right;
 
 public:
     /**

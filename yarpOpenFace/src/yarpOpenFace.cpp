@@ -168,17 +168,17 @@ bool FACEManager::open() {
 
 
     // Kalman Filter config
-    // 1.kalman filter setup
+    // 1.kalman_left filter setup
     const int stateNum = 4;
     const int measureNum = 2;
-    kalman = new cv::KalmanFilter(stateNum, measureNum ,0); //state(x,y,deltaX,deltaY)
-    state = new cv::Mat(stateNum, 1, CV_32F);
-    processNoise = new cv::Mat(stateNum, 1, CV_32F);
-    measurement = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
+    kalman_left = new cv::KalmanFilter(stateNum, measureNum ,0); //state_lefg(x,y,deltaX,deltaY)
+    state_left = new cv::Mat(stateNum, 1, CV_32F);
+    //processNoise = new cv::Mat(stateNum, 1, CV_32F);
+    measurement_left = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
 
-    cv::randn( *state, cv::Scalar::all(0), cv::Scalar::all(0.1) );
+    cv::randn( *state_left, cv::Scalar::all(0), cv::Scalar::all(0.1) );
 
-    kalman->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
+    kalman_left->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
         // transition matrix
         1, 0, 1, 0,
         0, 1, 0, 1,
@@ -186,13 +186,36 @@ bool FACEManager::open() {
         0, 0, 0, 1
         );
 
-    cv::setIdentity(kalman->measurementMatrix, cv::Scalar::all(1));
-    cv::setIdentity(kalman->processNoiseCov, cv::Scalar::all(1e-5));
-    cv::setIdentity(kalman->measurementNoiseCov, cv::Scalar::all(1e-1));
-    cv::setIdentity(kalman->errorCovPost, cv::Scalar::all(1));
+    cv::setIdentity(kalman_left->measurementMatrix, cv::Scalar::all(1));
+    cv::setIdentity(kalman_left->processNoiseCov, cv::Scalar::all(1e-5));
+    cv::setIdentity(kalman_left->measurementNoiseCov, cv::Scalar::all(1e-1));
+    cv::setIdentity(kalman_left->errorCovPost, cv::Scalar::all(1));
 
-    //initialize post state of kalman filter at random
-    cv::randn(kalman->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
+    //initialize post state_lefg of kalman_left filter at random
+    cv::randn(kalman_left->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
+
+    kalman_right = new cv::KalmanFilter(stateNum, measureNum ,0); //state_lefg(x,y,deltaX,deltaY)
+    state_right = new cv::Mat(stateNum, 1, CV_32F);
+    //processNoise = new cv::Mat(stateNum, 1, CV_32F);
+    measurement_right = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
+
+    cv::randn( *state_right, cv::Scalar::all(0), cv::Scalar::all(0.1) );
+
+    kalman_right->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
+        // transition matrix
+        1, 0, 1, 0,
+        0, 1, 0, 1,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+        );
+
+    cv::setIdentity(kalman_right->measurementMatrix, cv::Scalar::all(1));
+    cv::setIdentity(kalman_right->processNoiseCov, cv::Scalar::all(1e-5));
+    cv::setIdentity(kalman_right->measurementNoiseCov, cv::Scalar::all(1e-1));
+    cv::setIdentity(kalman_right->errorCovPost, cv::Scalar::all(1));
+
+    //initialize post state_lefg of kalman_left filter at random
+    cv::randn(kalman_right->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
 
     displayLandmarks = true;
     displayPoints = false;
@@ -210,10 +233,14 @@ void FACEManager::close() {
     delete face_model;
     delete det_parameters;
     yDebug() << "now delete KF parameters...";
-    delete kalman;
-    delete state;
-    delete processNoise;
-    delete measurement;
+    delete kalman_left;
+    delete state_left;
+    //delete processNoise;
+    delete measurement_left;
+    delete kalman_right;
+    delete state_right;
+    //delete processNoise;
+    delete measurement_right;
     yDebug() << "now closing ports...";
     imageOutPort.writeStrict();
     imageOutPort.close();
@@ -359,31 +386,34 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::circle(leftEye, leftPupil, 3, 1234);
 
-            leftPupil.x = leftPupil.x + roi.x;
-            leftPupil.y = leftPupil.y + roi.y;
-
             //Kalman filter
-            //2.kalman filter prediction
-            cv::Mat prediction = kalman->predict();
+            //2.kalman_left filter prediction
+            cv::Mat prediction = kalman_left->predict();
             cv::Point2f predictPt = cv::Point2f(prediction.at<float>(0), prediction.at<float>(1));
 
             //3.update measure
-            measurement->at<float>(0) = (float)leftPupil.x;
-            measurement->at<float>(1) = (float)leftPupil.y;
+            measurement_left->at<float>(0) = (float)leftPupil.x;
+            measurement_left->at<float>(1) = (float)leftPupil.y;
 
             //4.update
-            kalman->correct(*measurement);
-//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman->processNoiseCov.at<float>(0, 0))));
-//            *state = kalman->transitionMatrix * *state + *processNoise;
+            kalman_left->correct(*measurement_left);
+//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman_left->processNoiseCov.at<float>(0, 0))));
+//            *state_lefg = kalman_left->transitionMatrix * *state_lefg + *processNoise;
 
-            std::cout << "leftPupil: " << leftPupil.x << ","                      << leftPupil.y << endl;
+            std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
 //            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
 
-            cv::Point statePt = cv::Point( (int)kalman->statePost.at<float>(0), (int)kalman->statePost.at<float>(1));
+            cv::Point stateLeftPt = cv::Point( (int)kalman_left->statePost.at<float>(0), (int)kalman_left->statePost.at<float>(1));
 
-            leftPupil = statePt;
+            leftPupil = stateLeftPt;
 
-            std::cout << "leftPupil: " << leftPupil.x << ","                      << leftPupil.y << endl;
+            std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
+
+            cv::circle(leftEye, leftPupil, 3, cv::Scalar(0,255,0));
+
+            leftPupil.x = leftPupil.x + roi.x;
+            leftPupil.y = leftPupil.y + roi.y;
+
 
             // std::cout << part << endl;
             // for (size_t i = 0; i < p_face_model.hierarchical_models[part] ;
@@ -425,6 +455,31 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point rightPupil = findEyeCenter(rightEye, roi, "Left Eye");
 
             cv::circle(rightEye, rightPupil, 3, 1234);
+
+           //Kalman filter
+            //2.kalman filter prediction
+            prediction = kalman_right->predict();
+            //predictPt = cv::Point2f(prediction.at<float>(0), prediction.at<float>(1));
+
+            //3.update measure
+            measurement_right->at<float>(0) = (float)rightPupil.x;
+            measurement_right->at<float>(1) = (float)rightPupil.y;
+
+            //4.update
+            kalman_right->correct(*measurement_right);
+//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman_right->processNoiseCov.at<float>(0, 0))));
+//            *state_lefg = kalman_right->transitionMatrix * *state_lefg + *processNoise;
+
+            std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
+//            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
+
+            cv::Point stateRightPt = cv::Point( (int)kalman_right->statePost.at<float>(0), (int)kalman_right->statePost.at<float>(1));
+
+            rightPupil = stateRightPt;
+
+            std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
+
+            cv::circle(rightEye, rightPupil, 3, cv::Scalar(0,255,0));
 
             rightPupil.x = rightPupil.x + roi.x;
             rightPupil.y = rightPupil.y + roi.y;
