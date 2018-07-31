@@ -109,7 +109,13 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutLefteyePort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
+    yarp::os::RpcClient camPort;
 
+    double fx;
+    double fy;
+    double cx;
+    double cy;
+    bool getCameraOptions();
 
     cv::Mat                             imgMat;
 
