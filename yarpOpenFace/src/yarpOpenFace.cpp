@@ -172,11 +172,11 @@ bool FACEManager::open() {
     const int stateNum = 4;
     const int measureNum = 2;
     kalman_left = new cv::KalmanFilter(stateNum, measureNum ,0); //state_lefg(x,y,deltaX,deltaY)
-    state_left = new cv::Mat(stateNum, 1, CV_32F);
+    //state_left = new cv::Mat(stateNum, 1, CV_32F);
     //processNoise = new cv::Mat(stateNum, 1, CV_32F);
     measurement_left = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
 
-    cv::randn( *state_left, cv::Scalar::all(0), cv::Scalar::all(0.1) );
+    //cv::randn( *state_left, cv::Scalar::all(0), cv::Scalar::all(0.1) );
 
     kalman_left->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
         // transition matrix
@@ -195,11 +195,11 @@ bool FACEManager::open() {
     cv::randn(kalman_left->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
 
     kalman_right = new cv::KalmanFilter(stateNum, measureNum ,0); //state_lefg(x,y,deltaX,deltaY)
-    state_right = new cv::Mat(stateNum, 1, CV_32F);
+    //state_right = new cv::Mat(stateNum, 1, CV_32F);
     //processNoise = new cv::Mat(stateNum, 1, CV_32F);
     measurement_right = new cv::Mat(cv::Mat::zeros(measureNum, 1, CV_32F)); //measure(x,y)
 
-    cv::randn( *state_right, cv::Scalar::all(0), cv::Scalar::all(0.1) );
+    //cv::randn( *state_right, cv::Scalar::all(0), cv::Scalar::all(0.1) );
 
     kalman_right->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
         // transition matrix
@@ -234,11 +234,11 @@ void FACEManager::close() {
     delete det_parameters;
     yDebug() << "now delete KF parameters...";
     delete kalman_left;
-    delete state_left;
+    //delete state_left;
     //delete processNoise;
     delete measurement_left;
     delete kalman_right;
-    delete state_right;
+    //delete state_right;
     //delete processNoise;
     delete measurement_right;
     yDebug() << "now closing ports...";
@@ -305,6 +305,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     if (!face_model->eye_model) {
         cout << "WARNING: no eye model found" << endl;
     }
+
+//eye crop resize
+    const int resize_width = 50;
+    const int resize_height = 25;
+    double resize_ratio = 1.0;
 
     // cout << "Starting tracking" << endl;
 
@@ -374,9 +379,14 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             roi.width = lefteye_region_width;
             roi.height = lefteye_region_height;
 
-            leftEye = rgb_image(roi);
+            cv::Mat tempLeftEye;
+            tempLeftEye = rgb_image(roi);
 
-            cv::Point leftPupil = findEyeCenter(leftEye, roi, "Right Eye");
+            cv::resize(tempLeftEye, leftEye, cv::Size(resize_width, resize_height), 0, 0, CV_INTER_LINEAR);
+
+            //leftEye = rgb_image(roi);
+
+            cv::Point leftPupil = findEyeCenter(leftEye, roi, "Left Eye");
 
             // std::cout << "left eye center: " << lefteye_region_center_x << ","
             //           << lefteye_region_center_y << endl;
@@ -400,32 +410,27 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 //            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman_left->processNoiseCov.at<float>(0, 0))));
 //            *state_lefg = kalman_left->transitionMatrix * *state_lefg + *processNoise;
 
-            std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
+            //std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
 //            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
 
             cv::Point stateLeftPt = cv::Point( (int)kalman_left->statePost.at<float>(0), (int)kalman_left->statePost.at<float>(1));
 
             leftPupil = stateLeftPt;
 
-            std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
+            //std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
 
             cv::circle(leftEye, leftPupil, 3, cv::Scalar(0,255,0));
 
-            leftPupil.x = leftPupil.x + roi.x;
-            leftPupil.y = leftPupil.y + roi.y;
+            resize_ratio = (double)lefteye_region_width / resize_width;
+            std::cout << "ratio " << resize_ratio << endl;
 
+            leftPupil.x = (leftPupil.x * resize_ratio) + roi.x;
+            leftPupil.y = (leftPupil.y * resize_ratio) + roi.y;
 
-            // std::cout << part << endl;
-            // for (size_t i = 0; i < p_face_model.hierarchical_models[part] ;
-            // ++i)
-            {
-                // cv::circle(leftEye,
-                // p_face_model.hierarchical_models[part][i], 1, 2345);
-            }
-
-            int rightlefteye_region_width =
+            // right pupil
+            int righteye_region_width =
                 landmarks_2D[45][0] - landmarks_2D[42][0];
-            int rightlefteye_region_height = 0.5 * rightlefteye_region_width;
+            int righteye_region_height = 0.5 * righteye_region_width;
 
             mean_y = 0;
             mean_x = 0;
@@ -436,23 +441,27 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             mean_x = mean_x / 6;
             mean_y = mean_y / 6;
 
-            int rightlefteye_region_center_y = mean_y;
-            int rightlefteye_region_center_x = mean_x;
+            int righteye_region_center_y = mean_y;
+            int righteye_region_center_x = mean_x;
 
-            rightlefteye_region_width = rightlefteye_region_width * 2;
-            rightlefteye_region_height = rightlefteye_region_height * 2;
+            righteye_region_width = righteye_region_width * 2;
+            righteye_region_height = righteye_region_height * 2;
 
             // cv::Rect roi;
             roi.x =
-                rightlefteye_region_center_x - 0.5 * rightlefteye_region_width;
+                righteye_region_center_x - 0.5 * righteye_region_width;
             roi.y =
-                rightlefteye_region_center_y - 0.5 * rightlefteye_region_height;
-            roi.width = rightlefteye_region_width;
-            roi.height = rightlefteye_region_height;
+                righteye_region_center_y - 0.5 * righteye_region_height;
+            roi.width = righteye_region_width;
+            roi.height = righteye_region_height;
 
-            rightEye = rgb_image(roi);
+            cv::Mat tempRightEye;
+            tempRightEye = rgb_image(roi);
+            //rightEye = rgb_image(roi);
 
-            cv::Point rightPupil = findEyeCenter(rightEye, roi, "Left Eye");
+            cv::resize(tempRightEye, rightEye, cv::Size(resize_width, resize_height), 0, 0, CV_INTER_LINEAR);
+
+            cv::Point rightPupil = findEyeCenter(rightEye, roi, "Right Eye");
 
             cv::circle(rightEye, rightPupil, 3, 1234);
 
@@ -467,11 +476,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             //4.update
             kalman_right->correct(*measurement_right);
-//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman_right->processNoiseCov.at<float>(0, 0))));
-//            *state_lefg = kalman_right->transitionMatrix * *state_lefg + *processNoise;
 
             std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
-//            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
 
             cv::Point stateRightPt = cv::Point( (int)kalman_right->statePost.at<float>(0), (int)kalman_right->statePost.at<float>(1));
 
@@ -481,8 +487,14 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::circle(rightEye, rightPupil, 3, cv::Scalar(0,255,0));
 
-            rightPupil.x = rightPupil.x + roi.x;
-            rightPupil.y = rightPupil.y + roi.y;
+//            rightPupil.x = rightPupil.x + roi.x;
+//            rightPupil.y = rightPupil.y + roi.y;
+
+            resize_ratio = (double)righteye_region_width / resize_width;
+            std::cout << "ratio " << resize_ratio << endl;
+            rightPupil.x = (rightPupil.x * resize_ratio) + roi.x;
+            rightPupil.y = (rightPupil.y * resize_ratio) + roi.y;
+
 
             // Estimate head pose and eye gaze
             cv::Vec6d pose_estimate =
@@ -587,7 +599,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     IplImage yarpRighteyeImg;
     if (leftEye.empty() == 0) {
-        yarpRighteyeImg = leftEye;
+        yarpRighteyeImg = rightEye;
         outRighteyeImg.resize(yarpRighteyeImg.width, yarpRighteyeImg.height);
         cvCopy(&yarpRighteyeImg, (IplImage *)outRighteyeImg.getIplImage());
         imageOutRighteyePort.write();
@@ -595,7 +607,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     IplImage yarpLefteyeImg;
     if (rightEye.empty() == 0) {
-        yarpLefteyeImg = rightEye;
+        yarpLefteyeImg = leftEye;
         outLefteyeImg.resize(yarpLefteyeImg.width, yarpLefteyeImg.height);
         cvCopy(&yarpLefteyeImg, (IplImage *)outLefteyeImg.getIplImage());
         imageOutLefteyePort.write();
@@ -663,6 +675,8 @@ void testPossibleCentersFormula(int x, int y, const cv::Mat &weight, double gx,
         }
     }
 }
+
+//cv::Mat
 
 double computeDynamicThreshold(const cv::Mat &mat, double stdDevFactor) {
     cv::Scalar stdMagnGrad, meanMagnGrad;
