@@ -307,8 +307,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     }
 
 //eye crop resize
-    const int resize_width = 50;
-    const int resize_height = 25;
+    const int resize_width = 40;
+    const int resize_height = 20;
     double resize_ratio = 1.0;
 
     // cout << "Starting tracking" << endl;
@@ -356,26 +356,26 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                 landmarks_2D[39][0] - landmarks_2D[36][0];
             int lefteye_region_height = 0.5 * lefteye_region_width;
 
-            int mean_y = 0;
+            double mean_y = 0;
             for (int i = 0; i < 6; i++)
-                mean_y += landmarks_2D[36 + i][1];
+                mean_y += (double)landmarks_2D[36 + i][1];
             mean_y = mean_y / 6;
 
-            int lefteye_region_center_y = mean_y;
+            double lefteye_region_center_y = mean_y;
 
-            int mean_x = 0;
+            double mean_x = 0;
             for (int i = 0; i < 6; i++)
-                mean_x += landmarks_2D[36 + i][0];
+                mean_x += (double)landmarks_2D[36 + i][0];
             mean_x = mean_x / 6;
 
-            int lefteye_region_center_x = mean_x;
+            double lefteye_region_center_x = mean_x;
 
             lefteye_region_width = lefteye_region_width * 2;
             lefteye_region_height = lefteye_region_height * 2;
 
             cv::Rect roi;
-            roi.x = lefteye_region_center_x - 0.5 * lefteye_region_width;
-            roi.y = lefteye_region_center_y - 0.5 * lefteye_region_height;
+            roi.x = lefteye_region_center_x - 0.5 * (double)lefteye_region_width;
+            roi.y = lefteye_region_center_y - 0.5 * (double)lefteye_region_height;
             roi.width = lefteye_region_width;
             roi.height = lefteye_region_height;
 
@@ -548,6 +548,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             std::cout << "gaze point " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
 
+            yarp::os::Bottle &pos = target.addList();
+            pos.addDouble(gaze_point3d.x);
+            pos.addDouble(gaze_point3d.y);
+            pos.addDouble(gaze_point3d.z);
+
             // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
             // H = axis2dcm(ori_act);
@@ -591,6 +596,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     }
     //-------------------------
     IplImage yarpImg = visualizer.GetVisImage();
+
+    targetOutPort.write();
 
     outImg.resize(yarpImg.width, yarpImg.height);
     cvCopy(&yarpImg, (IplImage *)outImg.getIplImage());
