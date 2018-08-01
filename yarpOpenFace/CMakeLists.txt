@@ -9,6 +9,7 @@ find_package(YARP)
 find_package(ICUB)
 find_package(ICUBcontrib)
 #find_package(dlib)
+find_package(cer)
 
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
@@ -20,7 +21,7 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/human-sensing-staryes/yarpOpenFace/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/tmp_ShouShan/human-sensing-openface/yarpOpenFace/cmake/modules/")
 #set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
 set(CMAKE_CONFIG_DIR etc/OpenFace)
@@ -256,7 +257,7 @@ add_subdirectory(lib/local/GazeAnalyser)
 # Utilities library
 add_subdirectory(lib/local/Utilities)
 # cer library
-add_subdirectory(lib/local/cer_kinematics)
+#add_subdirectory(lib/local/cer_kinematics)
 
 ##########################################################
 
@@ -304,7 +305,7 @@ include_directories(lib/local/LandmarkDetector/include)
 include_directories(lib/local/FaceAnalyser/include)
 include_directories(lib/local/GazeAnalyser/include)
 include_directories(lib/local/Utilities/include)
-include_directories(lib/local/cer_kinematics/include)
+#include_directories(lib/local/cer_kinematics/include)
 
 #add_executable(FaceLandmarkImg FaceLandmarkImg.cpp)
 add_executable(${PROJECT_NAME} ${source} ${header} ${doc} ${idl} ${IDL_GEN_FILES})
@@ -314,7 +315,7 @@ target_link_libraries(${PROJECT_NAME} FaceAnalyser)
 target_link_libraries(${PROJECT_NAME} GazeAnalyser)
 target_link_libraries(${PROJECT_NAME} Utilities)
 target_link_libraries(${PROJECT_NAME} dlib)
-target_link_libraries(${PROJECT_NAME} cer_kinematics)
+#target_link_libraries(${PROJECT_NAME} cer_kinematics)
 
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES} ${BLAS_LIBRARIES} )
 
