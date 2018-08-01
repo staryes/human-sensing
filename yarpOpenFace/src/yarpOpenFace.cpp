@@ -111,29 +111,29 @@ FACEManager::FACEManager(const std::string &moduleName,
 }
 
 /****************************************************************/
-bool FACEManager::getCameraOptions()
-{
-    if (camPort.getOutputCount()>0)
-    {
-        yarp::os::Bottle cmd,rep;
-        cmd.addVocab(yarp::os::Vocab::encode("visr"));
-        cmd.addVocab(yarp::os::Vocab::encode("get"));
-        cmd.addVocab(yarp::os::Vocab::encode("fov"));
-        if (camPort.write(cmd,rep))
-        {
-            if (rep.size()>=5)
-            {
-                fx = rep.get(3).asDouble();
-                fy = rep.get(4).asDouble();
-                yInfo()<<"camera fov_h (from sensor) ="<<fx;
-                yInfo()<<"camera fov_v (from sensor) ="<<fy;
-                return true;
-            }
-        }
-    }
+// bool getCameraOptions()
+// {
+//     if (camPort.getOutputCount()>0)
+//     {
+//         yarp::os::Bottle cmd,rep;
+//         cmd.addVocab(yarp::os::Vocab::encode("visr"));
+//         cmd.addVocab(yarp::os::Vocab::encode("get"));
+//         cmd.addVocab(yarp::os::Vocab::encode("fov"));
+//         if (camPort.write(cmd,rep))
+//         {
+//             if (rep.size()>=5)
+//             {
+//                 fx = rep.get(3).asDouble();
+//                 fy = rep.get(4).asDouble();
+//                 yInfo()<<"camera fov_h (from sensor) ="<<fx;
+//                 yInfo()<<"camera fov_v (from sensor) ="<<fy;
+//                 return true;
+//             }
+//         }
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
 /**********************************************************/
 bool FACEManager::open() {
@@ -161,7 +161,7 @@ bool FACEManager::open() {
 
     camPort.open("/" + moduleName + "/cam:rpc");
     yarp::os::Network::connect(camPort.getName().c_str(), "/depthCamera/rpc:i", "tcp");
-    getCameraOptions();
+    //getCameraOptions();
 
     // yDebug() << "path is: " << predictorFile.c_str();
 
@@ -326,6 +326,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     rgb_image = imgMat;
 
+
+    //float fx = 450.0;
+    //float fy = 460.0;
     cx = imgMat.cols / 2;
     cy = imgMat.rows / 2;
 
@@ -562,9 +565,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point3f gaze_center = (leftEyeballCentre + rightEyeballCentre)/2;
             cv::Point3f gaze_directionAvg = gaze_direction0 + gaze_direction1;
             gaze_directionAvg = gaze_directionAvg / norm(gaze_directionAvg);
-            cv::Point3f gaze_point3d = gaze_center + gaze_directionAvg*gaze_center.z;
+            cv::Point3f gaze_point3d = gaze_center + gaze_directionAvg*gaze_center.z*0.5;
 
-            std::cout << "gaze point " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
+            std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
+            std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
 
             yarp::os::Bottle &pos = target.addList();
             pos.addDouble(gaze_point3d.x);

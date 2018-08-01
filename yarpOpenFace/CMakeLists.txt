@@ -255,6 +255,8 @@ add_subdirectory(lib/local/FaceAnalyser)
 add_subdirectory(lib/local/GazeAnalyser)
 # Utilities library
 add_subdirectory(lib/local/Utilities)
+# cer library
+add_subdirectory(lib/local/cer_kinematics)
 
 ##########################################################
 
@@ -302,6 +304,7 @@ include_directories(lib/local/LandmarkDetector/include)
 include_directories(lib/local/FaceAnalyser/include)
 include_directories(lib/local/GazeAnalyser/include)
 include_directories(lib/local/Utilities/include)
+include_directories(lib/local/cer_kinematics/include)
 
 #add_executable(FaceLandmarkImg FaceLandmarkImg.cpp)
 add_executable(${PROJECT_NAME} ${source} ${header} ${doc} ${idl} ${IDL_GEN_FILES})
@@ -311,6 +314,7 @@ target_link_libraries(${PROJECT_NAME} FaceAnalyser)
 target_link_libraries(${PROJECT_NAME} GazeAnalyser)
 target_link_libraries(${PROJECT_NAME} Utilities)
 target_link_libraries(${PROJECT_NAME} dlib)
+target_link_libraries(${PROJECT_NAME} cer_kinematics)
 
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES} ${BLAS_LIBRARIES} )
 
