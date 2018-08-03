@@ -32,6 +32,8 @@ bool FACEModule::configure(yarp::os::ResourceFinder &rf) {
                  "path name (string)")
             .asString();
 
+    
+
     std::string firstStr = rf.findFile(predictorFile.c_str());
 
     setName(moduleName.c_str());
@@ -327,8 +329,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     rgb_image = imgMat;
 
 
-    //float fx = 450.0;
-    //float fy = 460.0;
+    fx = 450.0;
+    fy = 460.0;
     cx = imgMat.cols / 2;
     cy = imgMat.rows / 2;
 

@@ -144,6 +144,24 @@ private:
     //cv::Mat* processNoise;
     cv::Mat* measurement_right;
 
+  //gaze controlboard
+  	PolyDriver clientGazeCtrl;
+	IGazeControl *igaze;
+    IPositionControl *pos;
+    IEncoders *encs;
+    IVelocityControl *vel;
+
+    Vector tmp, position, command, encoders, velocity, acceleration;
+    Vector fp, x;
+    Vec6d pose_estimate_CLM, pose_estimate_to_draw;
+
+    // parameters for transfromation of pose w.r.t eye to pose w.r.t root
+    Vector pose_act, ori_act;       // actual pose and actual orientation of the left eye of icub
+    Vector pose_clm, pose_robot;    // estimated pose by clm, caculated pose w.r.t the root of the robot
+    Matrix H;                       // transformation matrx
+
+
+  
 public:
     /**
      * constructor
