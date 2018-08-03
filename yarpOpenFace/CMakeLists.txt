@@ -5,11 +5,11 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
 project(yarpOpenFace)
 
-find_package(YARP)
-find_package(ICUB)
+find_package(YARP REQUIRED COMPONENTS OS sig dev math rosmsg)
+find_package(ICUB REQUIRED)
 find_package(ICUBcontrib)
 #find_package(dlib)
-find_package(cer)
+find_package(CER REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
@@ -256,8 +256,7 @@ add_subdirectory(lib/local/FaceAnalyser)
 add_subdirectory(lib/local/GazeAnalyser)
 # Utilities library
 add_subdirectory(lib/local/Utilities)
-# cer library
-#add_subdirectory(lib/local/cer_kinematics)
+
 
 ##########################################################
 
@@ -288,6 +287,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
                     ${YARP_INCLUDE_DIRS}
                     ${ICUB_INCLUDE_DIRS}
                     #${dlib_INCLUDE_DIRS}
+                    ${CER_INCLUDE_DIRS}
                     )
 
 #################################################
@@ -305,7 +305,6 @@ include_directories(lib/local/LandmarkDetector/include)
 include_directories(lib/local/FaceAnalyser/include)
 include_directories(lib/local/GazeAnalyser/include)
 include_directories(lib/local/Utilities/include)
-#include_directories(lib/local/cer_kinematics/include)
 
 #add_executable(FaceLandmarkImg FaceLandmarkImg.cpp)
 add_executable(${PROJECT_NAME} ${source} ${header} ${doc} ${idl} ${IDL_GEN_FILES})
@@ -315,12 +314,12 @@ target_link_libraries(${PROJECT_NAME} FaceAnalyser)
 target_link_libraries(${PROJECT_NAME} GazeAnalyser)
 target_link_libraries(${PROJECT_NAME} Utilities)
 target_link_libraries(${PROJECT_NAME} dlib)
-#target_link_libraries(${PROJECT_NAME} cer_kinematics)
+#target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} iKin CER::cer_kinematics)
 
-target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES} ${BLAS_LIBRARIES} )
+target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES} ${BLAS_LIBRARIES} ${CER_LIBRARIES})
 
 
-#install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 #################################################
 
@@ -347,7 +346,7 @@ if (DOWNLOAD_FACE_LANDMARKS_DAT)
 endif()
 
 if (EXISTS ${CMAKE_BINARY_DIR}/${BZIP2FILE})
-  yarp_install( FILES ${CMAKE_BINARY_DIR}/${BZIP2FILE} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME} )
+  yarp_install( FILES ${CMAKE_BINARY_DIR}/${BZIP2FILE} DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTAL_DIR}/${PROJECT_NAME} )
 else()
   message(WARNING "no ${BZIP2FILE} file has been found please turn ON the DOWNLOAD_FACE_LANDMARKS_DAT flag or download the file manually before running cmake")
 endif()
