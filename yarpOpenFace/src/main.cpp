@@ -16,23 +16,6 @@
  */
 
 #include "yarpOpenFace.h"
-#include <cstdlib>
-#include <string>
-#include <vector>
-#include <set>
-#include <map>
-#include <limits>
-#include <algorithm>
-
-#include <yarp/os/all.h>
-#include <yarp/dev/all.h>
-#include <yarp/sig/all.h>
-#include <yarp/math/Math.h>
-#include <yarp/math/SVD.h>
-
-#include <iCub/iKin/iKinFwd.h>
-
-#include <cer_kinematics/head.h>
 
 using namespace std;
 using namespace yarp::os;

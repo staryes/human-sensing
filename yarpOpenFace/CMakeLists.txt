@@ -2,10 +2,10 @@
 # Author: Vadim Tikhanoff
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 #
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 project(yarpOpenFace)
 
-find_package(YARP REQUIRED COMPONENTS OS sig dev math rosmsg)
+find_package(YARP 3.1 REQUIRED COMPONENTS OS sig dev math rosmsg)
 find_package(ICUB REQUIRED)
 find_package(ICUBcontrib)
 #find_package(dlib)

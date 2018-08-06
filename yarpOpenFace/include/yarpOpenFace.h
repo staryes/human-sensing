@@ -80,6 +80,24 @@ using namespace std;
 
 #include "yarpOpenFace_IDLServer.h"
 
+#include <cstdlib>
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <limits>
+#include <algorithm>
+
+#include <yarp/os/all.h>
+#include <yarp/dev/all.h>
+#include <yarp/sig/all.h>
+#include <yarp/math/Math.h>
+#include <yarp/math/SVD.h>
+
+#include <iCub/iKin/iKinFwd.h>
+
+#include <cer_kinematics/head.h>
+
 //#define DISPLAY_LANDMARKS           VOCAB4('d','i','s','p')
 
 typedef struct __circle_t {
@@ -145,20 +163,20 @@ private:
     cv::Mat* measurement_right;
 
   //gaze controlboard
-  	PolyDriver clientGazeCtrl;
-	IGazeControl *igaze;
-    IPositionControl *pos;
-    IEncoders *encs;
-    IVelocityControl *vel;
+  yarp::dev::PolyDriver clientGazeCtrl;
+  yarp::dev::IGazeControl *igaze;
+  yarp::dev::IPositionControl *pos;
+  yarp::dev::IEncoders *encs;
+  yarp::dev::IVelocityControl *vel;
 
-    Vector tmp, position, command, encoders, velocity, acceleration;
-    Vector fp, x;
-    Vec6d pose_estimate_CLM, pose_estimate_to_draw;
+  yarp::sig::Vector tmp, position, command, encoders, velocity, acceleration;
+  yarp::sig::Vector fp, x;
+  cv::Vec6d pose_estimate_CLM, pose_estimate_to_draw;
 
     // parameters for transfromation of pose w.r.t eye to pose w.r.t root
-    Vector pose_act, ori_act;       // actual pose and actual orientation of the left eye of icub
-    Vector pose_clm, pose_robot;    // estimated pose by clm, caculated pose w.r.t the root of the robot
-    Matrix H;                       // transformation matrx
+  yarp::sig::Vector pose_act, ori_act;       // actual pose and actual orientation of the left eye of icub
+  yarp::sig::Vector pose_clm, pose_robot;    // estimated pose by clm, caculated pose w.r.t the root of the robot
+  yarp::sig::Matrix H;                       // transformation matrx
 
 
   
