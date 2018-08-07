@@ -344,7 +344,7 @@ void FaceModelParameters::init()
 
 	// Face detection
 	haar_face_detector_location = "classifiers/haarcascade_frontalface_alt.xml";
-	mtcnn_face_detector_location = "model/mtcnn_detector/MTCNN_detector.txt";
+	mtcnn_face_detector_location = "../etc/OpenFace/model/mtcnn_detector/MTCNN_detector.txt";
 	quiet_mode = false;
 
 	// By default use MTCNN
