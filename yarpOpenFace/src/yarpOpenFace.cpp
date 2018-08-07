@@ -572,7 +572,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
 
-            yarp::os::Bottle &pos = target.addList();
+             yarp::os::Bottle &pos = target.addList();
             pos.addDouble(gaze_point3d.x);
             pos.addDouble(gaze_point3d.y);
             pos.addDouble(gaze_point3d.z);

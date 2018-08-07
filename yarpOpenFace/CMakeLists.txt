@@ -21,8 +21,7 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/tmp_ShouShan/human-sensing-openface/yarpOpenFace/cmake/modules/")
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/yarpOpenFace/cmake/modules/")
 
 set(CMAKE_CONFIG_DIR etc/OpenFace)
 set(CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_CONFIG_DIR}")
@@ -314,17 +313,14 @@ target_link_libraries(${PROJECT_NAME} FaceAnalyser)
 target_link_libraries(${PROJECT_NAME} GazeAnalyser)
 target_link_libraries(${PROJECT_NAME} Utilities)
 target_link_libraries(${PROJECT_NAME} dlib)
-#target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} iKin CER::cer_kinematics)
+target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} iKin CER::cer_kinematics)
 
 target_link_libraries(${PROJECT_NAME} ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ${Boost_LIBRARIES} ${TBB_LIBRARIES} ${BLAS_LIBRARIES} ${CER_LIBRARIES})
-
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 #################################################
 
-
-#install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 yarp_install(FILES ${doc} DESTINATION ${ICUBCONTRIB_MODULES_INSTALL_DIR})
 
 add_subdirectory(app)
@@ -338,7 +334,7 @@ if (DOWNLOAD_FACE_LANDMARKS_DAT)
     find_program(BZIP2_EXECUTABLE bzip2)
     if (NOT BZIP2_EXECUTABLE)
       message(WARNING "BZIP2 Not found on you system, please extract ${CMAKE_BINARY_DIR}/${BZIP2FILE}.bz2 manually")
-      message(WARNING "Extract it in $ICUBcontrib_DIR/share/ICUBcontrib/contexts/yarkOpenFace")
+      message(WARNING "Extract it in $ICUBcontrib_DIR/share/ICUBcontrib/contexts/yarpOpenFace")
     else()
       execute_process(COMMAND ${BZIP2_EXECUTABLE} -d ${CMAKE_BINARY_DIR}/${BZIP2FILE}.bz2)
     endif()
