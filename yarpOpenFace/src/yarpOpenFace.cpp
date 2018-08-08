@@ -578,17 +578,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
             std::cout << '0' << std::endl;
-            // yarp::os::Bottle &pos = target.addList();
-            // pos.addDouble(gaze_point3d.x);
-            // pos.addDouble(gaze_point3d.y);
-            // pos.addDouble(gaze_point3d.z);
 
-
-            
             yarp::sig::Vector q=getEncoders(drivers);
 
     //    setHeadPoseEncoder(q);
-    cout << "wowo" << endl;
 
      for (int i = 0; i < 6; i++)
          cout << q[i] << " " ;
@@ -617,7 +610,16 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
             std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
-            
+
+            yarp::os::Bottle &pos = target.addList();
+            pos.addDouble(pose_robot[0]);
+            pos.addDouble(pose_robot[1]);
+            pos.addDouble(pose_robot[2]);
+            // pos.addDouble(gaze_point3d.x);
+            // pos.addDouble(gaze_point3d.y);
+            // pos.addDouble(gaze_point3d.z);
+
+
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;
             int num_hog_rows = 0, num_hog_cols = 0;
