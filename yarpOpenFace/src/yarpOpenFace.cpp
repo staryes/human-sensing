@@ -1,4 +1,4 @@
-/*
+i/*
  * Copyright (C) 2011 Department of Robotics Brain and Cognitive Sciences -
  * Istituto Italiano di Tecnologia
  * Author: Vadim Tikhanoff
@@ -197,6 +197,8 @@ bool FACEManager::open() {
 
     // color = cv::Scalar( 0, 255, 0 );
 
+    yDebug() << " open the ";
+    openDrivers(drivers);
 
     // Kalman Filter config
     // 1.kalman_left filter setup
@@ -259,7 +261,9 @@ bool FACEManager::open() {
 /**********************************************************/
 void FACEManager::close() {
     mutex.wait();
-    yDebug() <<  "now delete detectors...";
+    yDebug() << "now close drivers...";
+    closeDrivers(drivers);
+    yDebug() << "now delete detectors...";
     delete face_detector_mtcnn;
     delete face_model;
     delete det_parameters;
@@ -571,25 +575,45 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
+            std::cout << '0' << std::endl;
+            // yarp::os::Bottle &pos = target.addList();
+            // pos.addDouble(gaze_point3d.x);
+            // pos.addDouble(gaze_point3d.y);
+            // pos.addDouble(gaze_point3d.z);
+            std::vector<yarp::dev::PolyDriver> drivers(3);
 
-             yarp::os::Bottle &pos = target.addList();
-            pos.addDouble(gaze_point3d.x);
-            pos.addDouble(gaze_point3d.y);
-            pos.addDouble(gaze_point3d.z);
+            
+            yarp::sig::Vector q=getEncoders(drivers);
+
+    //    setHeadPoseEncoder(q);
+    cout << "wowo" << endl;
+
+     for (int i = 0; i < 6; i++)
+         cout << q[i] << " " ;
+     cout << endl;
+    
 
             // transforming the pose w.r.t the root of the robot
-            igaze->getLeftEyePose(pose_act,ori_act);
-            H = axis2dcm(ori_act);
-            H(0,3) = pose_act[0];
-            H(1,3) = pose_act[1];
-            H(2,3) = pose_act[2];
-            pose_clm.resize(4);
-            pose_clm[0] = pose_estimate_CLM[0] / 1000; //convert to [m]
-            pose_clm[1] = pose_estimate_CLM[1] / 1000;
-            pose_clm[2] = pose_estimate_CLM[2] / 1000;
-            pose_clm[3] = 1;
-            pose_robot = H*pose_clm;
+            // igaze->getLeftEyePose(pose_act,ori_act);
+            // std::cout << '1' << std::endl;
+            // H = yarp::math::axis2dcm(ori_act);
+            // std::cout << '2' << std::endl;
+            // H(0,3) = pose_act[0];
+            // H(1,3) = pose_act[1];
+            // H(2,3) = pose_act[2];
+            // pose_clm.resize(4);
+            //             std::cout << '3' << std::endl;
+            // pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
+            // pose_clm[1] = gaze_point3d.y / 1000;
+            // pose_clm[2] = gaze_point3d.z / 1000;
+            // pose_clm[3] = 1;
+            //             std::cout << '4' << std::endl;
+            // pose_robot = H*pose_clm;
+            //             std::cout << '5' << std::endl;
 
+            // std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
+            // std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
+            
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;
             int num_hog_rows = 0, num_hog_cols = 0;
@@ -646,6 +670,18 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     mutex.post();
 }
+
+/**********************************************************/
+// void FACEManager::setHeadPoseEncoder(yarp::sig::Vector q)
+// {
+//   encoders = q;
+
+//     for (int i = 0; i < 6; i++)
+//         cout << q[i] << " " ;
+//     cout << endl;
+
+  
+// }
 
 cv::Mat computeMatXGradient(const cv::Mat &mat) {
     cv::Mat out(mat.rows, mat.cols, CV_64F);

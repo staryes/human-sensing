@@ -179,7 +179,6 @@ private:
   yarp::sig::Matrix H;                       // transformation matrx
 
 
-  
 public:
     /**
      * constructor
@@ -202,6 +201,8 @@ public:
     bool    execReq(const yarp::os::Bottle &command, yarp::os::Bottle &reply);
 
     cv::Point findEyeCenter(cv::Mat eyeROI, cv::Rect eye, std::string debugWindow);
+
+  //  void    setHeadPoseEncoder(yarp::sig::Vector q);
 
 };
 
@@ -242,6 +243,10 @@ public:
     bool quit();
 };
 
+
+void openDrivers(std::vector<yarp::dev::PolyDriver> &drivers);
+void closeDrivers(std::vector<yarp::dev::PolyDriver> &drivers);
+yarp::sig::Vector getEncoders(std::vector<yarp::dev::PolyDriver> &drivers);
 
 #endif
 //empty line to make gcc happy

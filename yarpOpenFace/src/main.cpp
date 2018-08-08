@@ -179,6 +179,13 @@ int main(int argc, char * argv[])
 
     Vector q=getEncoders(drivers);
 
+    //    setHeadPoseEncoder(q);
+    cout << "wowo" << endl;
+
+     for (int i = 0; i < 6; i++)
+         cout << q[i] << " " ;
+     cout << endl;
+    
     closeDrivers(drivers);
 
 
