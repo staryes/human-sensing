@@ -578,17 +578,17 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             pos.addDouble(gaze_point3d.z);
 
             // transforming the pose w.r.t the root of the robot
-            // igaze->getLeftEyePose(pose_act,ori_act);
-            // H = axis2dcm(ori_act);
-            // H(0,3) = pose_act[0];
-            // H(1,3) = pose_act[1];
-            // H(2,3) = pose_act[2];
-            // pose_clm.resize(4);
-            // pose_clm[0] = pose_estimate_CLM[0] / 1000; //convert to [m]
-            // pose_clm[1] = pose_estimate_CLM[1] / 1000;
-            // pose_clm[2] = pose_estimate_CLM[2] / 1000;
-            // pose_clm[3] = 1;
-            // pose_robot = H*pose_clm;
+            igaze->getLeftEyePose(pose_act,ori_act);
+            H = axis2dcm(ori_act);
+            H(0,3) = pose_act[0];
+            H(1,3) = pose_act[1];
+            H(2,3) = pose_act[2];
+            pose_clm.resize(4);
+            pose_clm[0] = pose_estimate_CLM[0] / 1000; //convert to [m]
+            pose_clm[1] = pose_estimate_CLM[1] / 1000;
+            pose_clm[2] = pose_estimate_CLM[2] / 1000;
+            pose_clm[3] = 1;
+            pose_robot = H*pose_clm;
 
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;

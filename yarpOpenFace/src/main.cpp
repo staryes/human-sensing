@@ -162,6 +162,8 @@ int main(int argc, char * argv[])
     map<string,Matrix> intrinsics;
     getIntrinsics(rf,intrinsics);
 
+    //module.setIntrinsics(rf, intrinsics); //XXX
+
     HeadParameters params_depth("depth");
     HeadParameters params_left("left");
     HeadParameters params_right("right");
