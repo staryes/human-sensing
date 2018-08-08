@@ -593,28 +593,30 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
      for (int i = 0; i < 6; i++)
          cout << q[i] << " " ;
      cout << endl;
-    
+
+     pose_act.setSubvector(0,q.subVector(0,2));
+     ori_art.setSubvector(3,q.subVector(3,5));
 
             // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
-            // std::cout << '1' << std::endl;
-            // H = yarp::math::axis2dcm(ori_act);
-            // std::cout << '2' << std::endl;
-            // H(0,3) = pose_act[0];
-            // H(1,3) = pose_act[1];
-            // H(2,3) = pose_act[2];
-            // pose_clm.resize(4);
-            //             std::cout << '3' << std::endl;
-            // pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
-            // pose_clm[1] = gaze_point3d.y / 1000;
-            // pose_clm[2] = gaze_point3d.z / 1000;
-            // pose_clm[3] = 1;
-            //             std::cout << '4' << std::endl;
-            // pose_robot = H*pose_clm;
-            //             std::cout << '5' << std::endl;
+            std::cout << '1' << std::endl;
+            H = yarp::math::axis2dcm(ori_act);
+            std::cout << '2' << std::endl;
+            H(0,3) = pose_act[0];
+            H(1,3) = pose_act[1];
+            H(2,3) = pose_act[2];
+            pose_clm.resize(4);
+                         std::cout << '3' << std::endl;
+            pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
+            pose_clm[1] = gaze_point3d.y / 1000;
+            pose_clm[2] = gaze_point3d.z / 1000;
+            pose_clm[3] = 1;
+                        std::cout << '4' << std::endl;
+            pose_robot = H*pose_clm;
+                        std::cout << '5' << std::endl;
 
-            // std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
-            // std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
+            std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
+            std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
             
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;
