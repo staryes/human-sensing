@@ -1,4 +1,4 @@
-i/*
+/*
  * Copyright (C) 2011 Department of Robotics Brain and Cognitive Sciences -
  * Istituto Italiano di Tecnologia
  * Author: Vadim Tikhanoff
@@ -197,7 +197,8 @@ bool FACEManager::open() {
 
     // color = cv::Scalar( 0, 255, 0 );
 
-    yDebug() << " open the ";
+    yDebug() << " open the drivers";
+    //drivers = new std::vector<yarp::dev::PolyDriver>(3);
     openDrivers(drivers);
 
     // Kalman Filter config
@@ -263,6 +264,7 @@ void FACEManager::close() {
     mutex.wait();
     yDebug() << "now close drivers...";
     closeDrivers(drivers);
+    //delete drivers;
     yDebug() << "now delete detectors...";
     delete face_detector_mtcnn;
     delete face_model;
@@ -580,7 +582,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // pos.addDouble(gaze_point3d.x);
             // pos.addDouble(gaze_point3d.y);
             // pos.addDouble(gaze_point3d.z);
-            std::vector<yarp::dev::PolyDriver> drivers(3);
+
 
             
             yarp::sig::Vector q=getEncoders(drivers);
