@@ -595,7 +595,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
      cout << endl;
 
      pose_act.setSubvector(0,q.subVector(0,2));
-     ori_art.setSubvector(3,q.subVector(3,5));
+     ori_act.setSubvector(3,q.subVector(3,5));
 
             // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
