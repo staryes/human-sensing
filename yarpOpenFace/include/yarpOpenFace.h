@@ -174,7 +174,7 @@ private:
   cv::Vec6d pose_estimate_CLM, pose_estimate_to_draw;
 
     // parameters for transfromation of pose w.r.t eye to pose w.r.t root
-   yarp::sig::Vector pose_act, ori_act;       // actual pose and actual orientation of the left eye of icub
+  //yarp::sig::Vector pose_act, ori_act;       // actual pose and actual orientation of the left eye of icub
   yarp::sig::Vector pose_clm, pose_robot;    // estimated pose by clm, caculated pose w.r.t the root of the robot
   yarp::sig::Matrix H;                       // transformation matrx
 

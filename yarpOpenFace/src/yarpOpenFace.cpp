@@ -570,6 +570,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // transforming the pose w.r.t the root of the robot
             q = getEncoders(*drivers);
 
+            yarp::sig::Vector pose_act(3, 0.0);
+            yarp::sig::Vector ori_act(3, 0.0);
+
             pose_act[0] = 0;
             pose_act[1] = 0;
             pose_act[2] = q[0]+q[3];
