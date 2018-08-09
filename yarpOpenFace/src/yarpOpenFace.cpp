@@ -567,24 +567,18 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
 
-            q=getEncoders(*drivers);
+            // transforming the pose w.r.t the root of the robot
+            q = getEncoders(*drivers);
+
+            igaze->getHeadPose(pose_act, ori_act, q);
 
             for (int i = 0; i < 6; i++)
                 cout << q[i] << " " ;
             cout << endl;
 
-            yarp::sig::Vector pose_act(3,0.0);
-            yarp::sig::Vector ori_act(3, 0.0);
-     
-            pose_act.setSubvector(0,q.subVector(0,2));
-            ori_act.setSubvector(0,q.subVector(3,5));
-
-            // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
 
-            yarp::sig::Matrix H;                       // transformation matrx
-            //H = yarp::math::axis2dcm(ori_act);
-            H = yarp::math::euler2dcm(ori_act);
+            H = yarp::math::axis2dcm(ori_act);
             H(0,3) = pose_act[0];
             H(1,3) = pose_act[1];
             H(2,3) = pose_act[2];
