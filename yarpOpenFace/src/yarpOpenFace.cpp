@@ -198,9 +198,14 @@ bool FACEManager::open() {
     // color = cv::Scalar( 0, 255, 0 );
 
     yDebug() << " open the drivers";
+    std::vector<yarp::dev::PolyDriver> drivers(3);
     //drivers = new std::vector<yarp::dev::PolyDriver>(3);
     openDrivers(drivers);
 
+    q=getEncoders(drivers);
+
+    closeDrivers(drivers);
+    
     // Kalman Filter config
     // 1.kalman_left filter setup
     const int stateNum = 4;
@@ -263,7 +268,7 @@ bool FACEManager::open() {
 void FACEManager::close() {
     mutex.wait();
     yDebug() << "now close drivers...";
-    closeDrivers(drivers);
+    //    closeDrivers(drivers);
     //delete drivers;
     yDebug() << "now delete detectors...";
     delete face_detector_mtcnn;
@@ -579,34 +584,46 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
             std::cout << '0' << std::endl;
 
-            yarp::sig::Vector q=getEncoders(drivers);
 
+            
     //    setHeadPoseEncoder(q);
 
      for (int i = 0; i < 6; i++)
          cout << q[i] << " " ;
      cout << endl;
 
+     yarp::sig::Vector pose_act(3,0.0);
+     yarp::sig::Vector ori_act(3, 0.0);
+     
      pose_act.setSubvector(0,q.subVector(0,2));
-     ori_act.setSubvector(3,q.subVector(3,5));
+     ori_act.setSubvector(0,q.subVector(3,5));
 
+     // for (int i = 0; i < 3; i++)
+     //     cout << pose_act[i] << " " ;
+     // cout << endl;
+     // for (int i = 0; i < 3; i++)
+     //     cout << ori_act[i] << " " ;
+     // cout << endl;
+     
             // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
-            std::cout << '1' << std::endl;
-            H = yarp::math::axis2dcm(ori_act);
-            std::cout << '2' << std::endl;
+            //std::cout << '1' << std::endl;
+            yarp::sig::Matrix H(4,4);                       // transformation matrx
+            //H = yarp::math::axis2dcm(ori_act);
+            H = yarp::math::euler2dcm(ori_act);
+            //std::cout << '2' << std::endl;
             H(0,3) = pose_act[0];
             H(1,3) = pose_act[1];
             H(2,3) = pose_act[2];
             pose_clm.resize(4);
-                         std::cout << '3' << std::endl;
+            //             std::cout << '3' << std::endl;
             pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
             pose_clm[1] = gaze_point3d.y / 1000;
             pose_clm[2] = gaze_point3d.z / 1000;
             pose_clm[3] = 1;
-                        std::cout << '4' << std::endl;
+            //            std::cout << '4' << std::endl;
             pose_robot = H*pose_clm;
-                        std::cout << '5' << std::endl;
+            //            std::cout << '5' << std::endl;
 
             std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
             std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
