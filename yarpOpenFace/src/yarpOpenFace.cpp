@@ -198,14 +198,11 @@ bool FACEManager::open() {
     // color = cv::Scalar( 0, 255, 0 );
 
     yDebug() << " open the drivers";
-    std::vector<yarp::dev::PolyDriver> drivers(3);
-    //drivers = new std::vector<yarp::dev::PolyDriver>(3);
-    openDrivers(drivers);
+    //std::vector<yarp::dev::PolyDriver> drivers;
 
-    q=getEncoders(drivers);
+    drivers = new std::vector<yarp::dev::PolyDriver>(3);
+    openDrivers(*drivers);
 
-    closeDrivers(drivers);
-    
     // Kalman Filter config
     // 1.kalman_left filter setup
     const int stateNum = 4;
@@ -268,7 +265,7 @@ bool FACEManager::open() {
 void FACEManager::close() {
     mutex.wait();
     yDebug() << "now close drivers...";
-    //    closeDrivers(drivers);
+    closeDrivers(drivers);
     //delete drivers;
     yDebug() << "now delete detectors...";
     delete face_detector_mtcnn;
@@ -571,7 +568,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
             std::cout << '0' << std::endl;
 
-
+            q=getEncoders(*drivers);
             
             //    setHeadPoseEncoder(q);
 

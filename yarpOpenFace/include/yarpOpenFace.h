@@ -178,7 +178,7 @@ private:
   yarp::sig::Vector pose_clm, pose_robot;    // estimated pose by clm, caculated pose w.r.t the root of the robot
   //yarp::sig::Matrix H;                       // transformation matrx
 
-  //  std::vector<yarp::dev::PolyDriver> drivers;
+  std::vector<yarp::dev::PolyDriver> *drivers;
   yarp::sig::Vector q;
 public:
     /**
