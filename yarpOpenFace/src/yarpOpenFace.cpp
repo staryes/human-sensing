@@ -570,15 +570,31 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // transforming the pose w.r.t the root of the robot
             q = getEncoders(*drivers);
 
-            igaze->getHeadPose(pose_act, ori_act, q);
+            pose_act[0] = 0;
+            pose_act[1] = 0;
+            pose_act[2] = q[0]+q[3];
+
+            ori_act[0] = q[4];
+            ori_act[1] = q[5];
+            ori_act[2] = 0;
+
+            //igaze->getHeadPose(pose_act, ori_act);
 
             for (int i = 0; i < 6; i++)
                 cout << q[i] << " " ;
             cout << endl;
 
-            // igaze->getLeftEyePose(pose_act,ori_act);
 
-            H = yarp::math::axis2dcm(ori_act);
+            for (int i = 0; i < 3; i++)
+                cout << pose_act[i] << " " ;
+            cout << endl;
+            for (int i = 0; i < 6; i++)
+                cout << ori_act[i] << " " ;
+            cout << endl;
+// igaze->getLeftEyePose(pose_act,ori_act);
+
+            //H = yarp::math::axis2dcm(ori_act);
+            H = yarp::math::euler2dcm(ori_act);
             H(0,3) = pose_act[0];
             H(1,3) = pose_act[1];
             H(2,3) = pose_act[2];
