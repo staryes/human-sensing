@@ -452,9 +452,11 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::Point stateLeftPt = cv::Point( (int)kalman_left->statePost.at<float>(0), (int)kalman_left->statePost.at<float>(1));
 
+            std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
+
             leftPupil = stateLeftPt;
 
-            //std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
+            std::cout << "KFleftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
 
             cv::circle(leftEye, leftPupil, 3, cv::Scalar(0,255,0));
 
@@ -527,7 +529,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             rightPupil = stateRightPt;
 
-            std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
+            std::cout << "KFrightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
 
             cv::circle(rightEye, rightPupil, 3, cv::Scalar(0,255,0));
 
@@ -594,8 +596,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             pose_act[1] = 0;
             pose_act[2] = q[0]+q[3];
 
-            ori_act[0] = q[4];
-            ori_act[1] = q[5];
+            ori_act[0] = q[5] * 3.1415926/180;
+            ori_act[1] = q[4] * 3.1415926/180;
             ori_act[2] = 0;
 
             //igaze->getHeadPose(pose_act, ori_act);
@@ -604,11 +606,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                 cout << q[i] << " " ;
             cout << endl;
 
-
             for (int i = 0; i < 3; i++)
                 cout << pose_act[i] << " " ;
             cout << endl;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 3; i++)
                 cout << ori_act[i] << " " ;
             cout << endl;
 // igaze->getLeftEyePose(pose_act,ori_act);
@@ -622,6 +623,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             pose_clm[0] = gaze_point3d.z / 1000; //convert to [m]
             pose_clm[1] = -gaze_point3d.x / 1000;
             pose_clm[2] = -gaze_point3d.y / 1000;
+            //pose_clm[0] = gaze_center.z / 1000;
+            //pose_clm[1] = -gaze_center.x / 1000;
+            //pose_clm[2] = -gaze_center.y / 1000;
             pose_clm[3] = 1;
             pose_robot = H*pose_clm;
 
