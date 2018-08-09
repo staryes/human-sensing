@@ -129,8 +129,8 @@ private:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
     yarp::os::RpcClient camPort;
 
-    float fx = 500.0;
-    float fy = 500.0;
+    float fx = 300.0;
+    float fy = 300.0;
     float cx;
     float cy;
     /* bool getCameraOptions(); */

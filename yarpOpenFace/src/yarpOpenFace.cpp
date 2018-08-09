@@ -265,7 +265,7 @@ bool FACEManager::open() {
 void FACEManager::close() {
     mutex.wait();
     yDebug() << "now close drivers...";
-    closeDrivers(drivers);
+    closeDrivers(*drivers);
     //delete drivers;
     yDebug() << "now delete detectors...";
     delete face_detector_mtcnn;
@@ -566,11 +566,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
             std::cout << "gaze point  " << gaze_point3d.x << " " << gaze_point3d.y << " " << gaze_point3d.z << endl;
-            std::cout << '0' << std::endl;
 
             q=getEncoders(*drivers);
-            
-            //    setHeadPoseEncoder(q);
 
             for (int i = 0; i < 6; i++)
                 cout << q[i] << " " ;

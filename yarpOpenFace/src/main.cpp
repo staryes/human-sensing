@@ -174,19 +174,19 @@ int main(int argc, char * argv[])
     kin["right"].setHeadParameters(params_right);
     releaseJointsBounds(kin);
 
-    vector<PolyDriver> drivers(3);
-    openDrivers(drivers);
+    // vector<PolyDriver> drivers(3);
+    // openDrivers(drivers);
 
-    Vector q=getEncoders(drivers);
+    // Vector q=getEncoders(drivers);
 
-    //    setHeadPoseEncoder(q);
-    cout << "wowo" << endl;
+    // //    setHeadPoseEncoder(q);
+    // cout << "wowo" << endl;
 
-     for (int i = 0; i < 6; i++)
-         cout << q[i] << " " ;
-     cout << endl;
+    //  for (int i = 0; i < 6; i++)
+    //      cout << q[i] << " " ;
+    //  cout << endl;
     
-    closeDrivers(drivers);
+    // closeDrivers(drivers);
 
 
     /* run the module: runModule() calls configure first and, if successful, it then runs */
