@@ -602,9 +602,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             H(1,3) = pose_act[1];
             H(2,3) = pose_act[2];
             pose_clm.resize(4);
-            pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
-            pose_clm[1] = gaze_point3d.y / 1000;
-            pose_clm[2] = gaze_point3d.z / 1000;
+            pose_clm[0] = gaze_point3d.z / 1000; //convert to [m]
+            pose_clm[1] = gaze_point3d.x / 1000;
+            pose_clm[2] = gaze_point3d.y / 1000;
             pose_clm[3] = 1;
             pose_robot = H*pose_clm;
 
