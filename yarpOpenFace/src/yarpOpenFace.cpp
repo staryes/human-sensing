@@ -612,7 +612,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             // pos.addDouble(gaze_point3d.y);
             // pos.addDouble(gaze_point3d.z);
 
-
+            targetOutPort.write();
+    
             cv::Mat sim_warped_img;
             cv::Mat_<double> hog_descriptor;
             int num_hog_rows = 0, num_hog_cols = 0;
@@ -644,7 +645,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     //-------------------------
     IplImage yarpImg = visualizer.GetVisImage();
 
-    targetOutPort.write();
+
 
     outImg.resize(yarpImg.width, yarpImg.height);
     cvCopy(&yarpImg, (IplImage *)outImg.getIplImage());
