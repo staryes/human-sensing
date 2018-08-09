@@ -25,12 +25,12 @@ bool FACEModule::configure(yarp::os::ResourceFinder &rf) {
     rf.setVerbose();
     moduleName = rf.check("name", yarp::os::Value("yarpOpenFace"),
                           "module name (string)")
-                     .asString();
+        .asString();
     predictorFile =
         rf.check("yarpOpenFaceFile",
                  yarp::os::Value("shape_predictor_68_face_landmarks.dat"),
                  "path name (string)")
-            .asString();
+        .asString();
 
     
 
@@ -218,11 +218,11 @@ bool FACEManager::open() {
     //cv::randn( *state_left, cv::Scalar::all(0), cv::Scalar::all(0.1) );
 
     kalman_left->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
-        // transition matrix
-        1, 0, 1, 0,
-        0, 1, 0, 1,
-        0, 0, 1, 0,
-        0, 0, 0, 1
+                                     // transition matrix
+                                     1, 0, 1, 0,
+                                     0, 1, 0, 1,
+                                     0, 0, 1, 0,
+                                     0, 0, 0, 1
         );
 
     cv::setIdentity(kalman_left->measurementMatrix, cv::Scalar::all(1));
@@ -241,11 +241,11 @@ bool FACEManager::open() {
     //cv::randn( *state_right, cv::Scalar::all(0), cv::Scalar::all(0.1) );
 
     kalman_right->transitionMatrix = (cv::Mat_<float>(stateNum, stateNum) <<
-        // transition matrix
-        1, 0, 1, 0,
-        0, 1, 0, 1,
-        0, 0, 1, 0,
-        0, 0, 0, 1
+                                      // transition matrix
+                                      1, 0, 1, 0,
+                                      0, 1, 0, 1,
+                                      0, 0, 1, 0,
+                                      0, 0, 0, 1
         );
 
     cv::setIdentity(kalman_right->measurementMatrix, cv::Scalar::all(1));
@@ -321,8 +321,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     //-------------------------
     // If can't find MTCNN face detector, default to HOG one
     if (det_parameters->curr_face_detector ==
-            LandmarkDetector::FaceModelParameters::FaceDetector::
-                MTCNN_DETECTOR &&
+        LandmarkDetector::FaceModelParameters::FaceDetector::
+        MTCNN_DETECTOR &&
         face_detector_mtcnn->empty()) {
         cout << "INFO: defaulting to HOG-SVM face detector" << endl;
         det_parameters->curr_face_detector = LandmarkDetector::
@@ -427,15 +427,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::resize(tempLeftEye, leftEye, cv::Size(resize_width, resize_height), 0, 0, CV_INTER_LINEAR);
 
-            //leftEye = rgb_image(roi);
-
             cv::Point leftPupil = findEyeCenter(leftEye, roi, "Left Eye");
-
-            // std::cout << "left eye center: " << lefteye_region_center_x << ","
-            //           << lefteye_region_center_y << endl;
-
-            // std::cout << "leftPupil: " << leftPupil.x + roi.x << ","
-            //           << leftPupil.y + roi.y << endl;
 
             cv::circle(leftEye, leftPupil, 3, 1234);
 
@@ -450,11 +442,6 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             //4.update
             kalman_left->correct(*measurement_left);
-//            cv::randn( *processNoise, cv::Scalar(0), cv::Scalar::all(sqrt(kalman_left->processNoiseCov.at<float>(0, 0))));
-//            *state_lefg = kalman_left->transitionMatrix * *state_lefg + *processNoise;
-
-            //std::cout << "leftPupil: " << leftPupil.x << "," << leftPupil.y << endl;
-//            std::cout << "KF pupil:  " << prediction.at<float>(0) << " " << prediction.at<float>(1) << " " << prediction.at<float>(2) << " " << prediction.at<float>(3) << endl;
 
             cv::Point stateLeftPt = cv::Point( (int)kalman_left->statePost.at<float>(0), (int)kalman_left->statePost.at<float>(1));
 
@@ -508,7 +495,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             cv::circle(rightEye, rightPupil, 3, 1234);
 
-           //Kalman filter
+            //Kalman filter
             //2.kalman filter prediction
             prediction = kalman_right->predict();
             //predictPt = cv::Point2f(prediction.at<float>(0), prediction.at<float>(1));
@@ -586,44 +573,33 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
 
             
-    //    setHeadPoseEncoder(q);
+            //    setHeadPoseEncoder(q);
 
-     for (int i = 0; i < 6; i++)
-         cout << q[i] << " " ;
-     cout << endl;
+            for (int i = 0; i < 6; i++)
+                cout << q[i] << " " ;
+            cout << endl;
 
-     yarp::sig::Vector pose_act(3,0.0);
-     yarp::sig::Vector ori_act(3, 0.0);
+            yarp::sig::Vector pose_act(3,0.0);
+            yarp::sig::Vector ori_act(3, 0.0);
      
-     pose_act.setSubvector(0,q.subVector(0,2));
-     ori_act.setSubvector(0,q.subVector(3,5));
+            pose_act.setSubvector(0,q.subVector(0,2));
+            ori_act.setSubvector(0,q.subVector(3,5));
 
-     // for (int i = 0; i < 3; i++)
-     //     cout << pose_act[i] << " " ;
-     // cout << endl;
-     // for (int i = 0; i < 3; i++)
-     //     cout << ori_act[i] << " " ;
-     // cout << endl;
-     
             // transforming the pose w.r.t the root of the robot
             // igaze->getLeftEyePose(pose_act,ori_act);
-            //std::cout << '1' << std::endl;
-            yarp::sig::Matrix H(4,4);                       // transformation matrx
+
+            yarp::sig::Matrix H;                       // transformation matrx
             //H = yarp::math::axis2dcm(ori_act);
             H = yarp::math::euler2dcm(ori_act);
-            //std::cout << '2' << std::endl;
             H(0,3) = pose_act[0];
             H(1,3) = pose_act[1];
             H(2,3) = pose_act[2];
             pose_clm.resize(4);
-            //             std::cout << '3' << std::endl;
             pose_clm[0] = gaze_point3d.x / 1000; //convert to [m]
             pose_clm[1] = gaze_point3d.y / 1000;
             pose_clm[2] = gaze_point3d.z / 1000;
             pose_clm[3] = 1;
-            //            std::cout << '4' << std::endl;
             pose_robot = H*pose_clm;
-            //            std::cout << '5' << std::endl;
 
             std::cout << pose_clm[0] << " " << pose_clm[1] << " " << pose_clm[2] << std::endl;
             std::cout << pose_robot[0] << " " << pose_robot[1] << " " << pose_robot[2] << std::endl;
@@ -648,8 +624,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             visualizer.SetObservationLandmarks(
                 face_model->detected_landmarks, 1.0,
                 face_model->GetVisibilities()); // Set confidence to high to
-                                                 // make sure we always
-                                                 // visualize
+            // make sure we always
+            // visualize
             visualizer.SetObservationPose(pose_estimate, 1.0);
             visualizer.SetObservationGaze(
                 gaze_direction0, gaze_direction1,
@@ -883,7 +859,7 @@ cv::Point FACEManager::findEyeCenter(cv::Mat rgbeye, cv::Rect eye,
     //printf("Eye Size: %ix%i\n", outSum.cols, outSum.rows);
     for (int y = 0; y < weight.rows; ++y) {
         const double *Xr = gradientX.ptr<double>(y),
-                     *Yr = gradientY.ptr<double>(y);
+            *Yr = gradientY.ptr<double>(y);
         for (int x = 0; x < weight.cols; ++x) {
             double gX = Xr[x], gY = Yr[x];
             if (gX == 0.0 && gY == 0.0) {
