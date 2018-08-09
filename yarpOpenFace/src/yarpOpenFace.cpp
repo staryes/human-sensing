@@ -419,6 +419,16 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             roi.width = lefteye_region_width;
             roi.height = lefteye_region_height;
 
+            if(roi.x < 0)
+                roi.x = 0;
+            if(roi.y < 0)
+                roi.y = 0;
+            if(roi.x+roi.width > rgb_image.cols)
+                roi.x = rgb_image.cols - roi.width;
+            if(roi.y+roi.height > rgb_image.rows)
+                roi.y = rgb_image.rows - roi.height;
+
+
             cv::Mat tempLeftEye;
             tempLeftEye = rgb_image(roi);
 
@@ -475,12 +485,19 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             righteye_region_height = righteye_region_height * 2;
 
             // cv::Rect roi;
-            roi.x =
-                righteye_region_center_x - 0.5 * righteye_region_width;
-            roi.y =
-                righteye_region_center_y - 0.5 * righteye_region_height;
+            roi.x = righteye_region_center_x - 0.5 * righteye_region_width;
+            roi.y = righteye_region_center_y - 0.5 * righteye_region_height;
             roi.width = righteye_region_width;
             roi.height = righteye_region_height;
+
+            if(roi.x < 0)
+                roi.x = 0;
+            if(roi.y < 0)
+                roi.y = 0;
+            if(roi.x+roi.width > rgb_image.cols)
+                roi.x = rgb_image.cols - roi.width;
+            if(roi.y+roi.height > rgb_image.rows)
+                roi.y = rgb_image.rows - roi.height;
 
             cv::Mat tempRightEye;
             tempRightEye = rgb_image(roi);
