@@ -594,7 +594,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
             pose_act[0] = 0;
             pose_act[1] = 0;
-            pose_act[2] = q[0]+q[3];
+            pose_act[2] = q[0]+q[3]+1.2;
 
             ori_act[0] = q[5] * 3.1415926/180;
             ori_act[1] = q[4] * 3.1415926/180;
@@ -623,9 +623,9 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             pose_clm[0] = gaze_point3d.z / 1000; //convert to [m]
             pose_clm[1] = -gaze_point3d.x / 1000;
             pose_clm[2] = -gaze_point3d.y / 1000;
-            //pose_clm[0] = gaze_center.z / 1000;
-            //pose_clm[1] = -gaze_center.x / 1000;
-            //pose_clm[2] = -gaze_center.y / 1000;
+            // pose_clm[0] = gaze_center.z / 1000;
+            // pose_clm[1] = -gaze_center.x / 1000;
+            // pose_clm[2] = -gaze_center.y / 1000;
             pose_clm[3] = 1;
             pose_robot = H*pose_clm;
 
