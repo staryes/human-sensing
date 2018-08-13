@@ -1,0 +1,17 @@
+#+STARTUP: indent
+#+STARTUP: latexpreview
+#+LATEX_HEADER_EXTRA: \usepackage{amsmath}
+
+* R1 Gaze following
+
+** State of the art
+
+
+** Methods
+*** OpenFace
+
+*** crop of eyes
+*** pupil detector
+*** Kalman Filter
+*** gaze point estimation
+
