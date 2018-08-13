@@ -337,8 +337,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     rgb_image = imgMat;
 
 
-    fx = 450.0;
-    fy = 460.0;
+    //fx = 320.0;
+    //fy = 320.0;
     cx = imgMat.cols / 2;
     cy = imgMat.rows / 2;
 
@@ -427,7 +427,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                 roi.x = rgb_image.cols - roi.width;
             if(roi.y+roi.height > rgb_image.rows)
                 roi.y = rgb_image.rows - roi.height;
-
+w
 
             cv::Mat tempLeftEye;
             tempLeftEye = rgb_image(roi);
