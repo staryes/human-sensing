@@ -337,10 +337,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     rgb_image = imgMat;
 
 
-    fx = 450.0;
-    fy = 460.0;
-    cx = imgMat.cols / 2;
-    cy = imgMat.rows / 2;
+    fx = 308.5;
+    fy = 308.5;
+    //cx = imgMat.cols / 2;
+    //cy = imgMat.rows / 2;
+    cx = 154.7;
+    cy = 118.0;
+
 
     if (!face_model->eye_model) {
         cout << "WARNING: no eye model found" << endl;
@@ -593,7 +596,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             yarp::sig::Vector ori_act(3, 0.0);
 
             pose_act[0] = 0;
-            pose_act[1] = 0;
+            pose_act[1] = 0;//-0.03;
             pose_act[2] = q[0]+q[3]+1.2;
 
             ori_act[0] = q[5] * 3.1415926/180;
