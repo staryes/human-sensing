@@ -1,0 +1,50 @@
+#+STARTUP: indent
+#+STARTUP: latexpreview
+#+LATEX_HEADER_EXTRA: \usepackage{amsmath}
+
+* R1 Gaze following
+
+** State of the art
+*** pupil detection
+[[zotero://select/items/1_6TD9W3UQ][Timm, Fabian, and Erhardt Barth. “ACCURATE EYE CENTRE LOCALISATION BY MEANS OF GRADIENTS,” n.d., 6.]]
+
+*** Gaze estimation
+**** OpenFace
+https://github.com/TadasBaltrusaitis/OpenFace
+[[zotero://select/items/1_458U6LZN][Baltrusaitis, T., A. Zadeh, Y. C. Lim, and L. P. Morency. “OpenFace 2.0: Facial Behavior Analysis Toolkit.” In 2018 13th IEEE International Conference on Automatic Face Gesture Recognition (FG 2018), 59–66, 2018. https://doi.org/10.1109/FG.2018.00019.]]
+They introduced 2.0 this year, might do better than Aoki's work.
+
+Constrained local neural fields(CLNF)
+[[zotero://select/items/1_J6WV8I8K][Baltrusaitis, Tadas, Peter Robinson, and Louis-Philippe Morency. “Constrained Local Neural Fields for Robust Facial Landmark Detection in the Wild,” 354–61. IEEE, 2013. https://doi.org/10.1109/ICCVW.2013.54.]]
+
+*** Aoki's team
+
+gaze interface drone
+
+
+
+** Methods
+*** OpenFace
+using OpenFace trained model to get landmarks and the pose of the face
+
+*** crop of eyes
+Because the OpenFace's pupil detection is not working in low resolution eye image (<40 pixel)
+We followed the paper to crop the eye image and using other way to detect the pupils.
+
+*** pupil detector
+using the gradient of gray level to find the center of the pupil
+works well in low resolution
+
+*** Kalman Filter
+the motion of the pupil is sometimes not stable, here we use KF to decrease the tracking noise.
+
+*** gaze point estimation
+assume that the depth of the gaze point is in the middle between robot and user
+the depth is estimated by OpenFace
+To use the gazes focus point with 
+
+
+** known issue
+*** segmentation failed
+now the model path is relative link. The only way is to run it from <robot-install>/bin directly.
+Otherwise it would cause “segmentation failed”
