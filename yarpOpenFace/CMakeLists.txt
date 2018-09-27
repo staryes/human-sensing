@@ -9,7 +9,7 @@ find_package(YARP)
 find_package(ICUB)
 find_package(ICUBcontrib)
 #find_package(dlib)
-find_package(cer)
+#find_package(cer)
 
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH})
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH})
@@ -21,8 +21,8 @@ list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/tmp_ShouShan/human-sensing-openface/yarpOpenFace/cmake/modules/")
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "~/tmp_ShouShan/human-sensing-openface/yarpOpenFace/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/yarpOpenFace/cmake/modules/")
 
 set(CMAKE_CONFIG_DIR etc/OpenFace)
 set(CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/${CMAKE_CONFIG_DIR}")
