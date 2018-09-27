@@ -91,7 +91,89 @@ bool FACEModule::attach(yarp::os::RpcServer &source) {
 }
 
 /**********************************************************/
+<<<<<<< HEAD
 bool FACEModule::quit() {
+=======
+bool FACEModule::display(const std::string& element, const std::string& value)
+{
+    bool returnVal = false;
+
+    if (element == "landmarks" || element == "points" || element == "labels" || element == "dark-mode")
+    {
+        if (element == "landmarks")
+        {
+            if (value=="on")
+            {
+                faceManager->displayLandmarks=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayLandmarks = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for landmarks";
+        }
+        if (element == "points")
+        {
+            if (value=="on")
+            {
+                faceManager->displayPoints=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayPoints = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for points";
+        }
+        if (element == "labels")
+        {
+            if (value=="on")
+            {
+                faceManager->displayLabels=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayLabels = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for labels";
+        }
+        if (element == "dark-mode")
+        {
+            if (value=="on")
+            {
+                faceManager->displayDarkMode=true;
+                returnVal = true;
+            }
+            else if (value=="off")
+            {
+                faceManager->displayDarkMode = false;
+                returnVal = true;
+            }
+            else
+                yInfo() << "error setting value for darkMode";
+        }
+        //yInfo() << "should now display \"landmarks\" " << faceManager->displayLandmarks << "\"points\"" << faceManager->displayPoints << "\"labels\"" << faceManager->displayLabels  << "\"dark-mode\"" << faceManager->displayDarkMode;
+    }
+    else
+    {
+        returnVal = false;
+        yInfo() << "Error in display request";
+    }
+    return returnVal;
+}
+
+/**********************************************************/
+bool FACEModule::quit()
+{
+>>>>>>> 384c9ea
     closing = true;
     return true;
 }
@@ -153,6 +235,7 @@ bool FACEManager::open() {
     outLandmarksPortName = "/" + moduleName + "/landmarks:o";
     landmarksOutPort.open(outLandmarksPortName.c_str());
 
+<<<<<<< HEAD
     outImgLefteyePortName = "/" + moduleName + "/image:lefteye";
     imageOutLefteyePort.open(outImgLefteyePortName.c_str());
 
@@ -164,6 +247,9 @@ bool FACEManager::open() {
     //getCameraOptions();
 
     // yDebug() << "path is: " << predictorFile.c_str();
+=======
+    //yDebug() << "path is: " << predictorFile.c_str();
+>>>>>>> 384c9ea
 
     // faceDetector = dlib::get_frontal_face_detector();
     // dlib::deserialize(predictorFile.c_str()) >> sp;
@@ -178,6 +264,7 @@ bool FACEManager::open() {
 
     cout << "Model loaded" << endl;
 
+<<<<<<< HEAD
     // Load facial feature extractor and AU analyser (make sure it is static)
     // FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
     // face_analysis_params.OptimizeForImages();
@@ -245,6 +332,22 @@ bool FACEManager::open() {
 
     //initialize post state_lefg of kalman_left filter at random
     cv::randn(kalman_right->statePost, cv::Scalar::all(0), cv::Scalar::all(0.1));
+=======
+	// Load facial feature extractor and AU analyser (make sure it is static)
+    //FaceAnalysis::FaceAnalyserParameters face_analysis_params("-yarp");
+    //face_analysis_params.OptimizeForImages();
+
+//	FaceAnalysis::FaceAnalyser face_analyser(face_analysis_params);
+//    p_face_analyser = &face_analyser;
+
+	// If bounding boxes not provided, use a face detector
+//	cv::CascadeClassifier classifier(det_parameters.haar_face_detector_location);
+//	dlib::frontal_face_detector face_detector_hog = dlib::get_frontal_face_detector();
+    LandmarkDetector::FaceDetectorMTCNN face_detector_mtcnn(det_parameters.mtcnn_face_detector_location);
+    p_face_detector_mtcnn = face_detector_mtcnn;
+
+    color = cv::Scalar( 0, 255, 0 );
+>>>>>>> 384c9ea
 
     displayLandmarks = true;
     displayPoints = false;
@@ -386,6 +489,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                 landmarks_2D[39][0] - landmarks_2D[36][0];
             int lefteye_region_height = 0.5 * lefteye_region_width;
 
+<<<<<<< HEAD
             double mean_y = 0;
             for (int i = 0; i < 6; i++)
                 mean_y += (double)landmarks_2D[36 + i][1];
@@ -397,6 +501,10 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             for (int i = 0; i < 6; i++)
                 mean_x += (double)landmarks_2D[36 + i][0];
             mean_x = mean_x / 6;
+=======
+			// Estimate head pose and eye gaze
+			cv::Vec6d pose_estimate = LandmarkDetector::GetPose(p_face_model, fx, fy, cx, cy);
+>>>>>>> 384c9ea
 
             double lefteye_region_center_x = mean_x;
 

@@ -100,13 +100,12 @@ private:
     std::string outImgPortName;         //string containing image output port name
     std::string outTargetPortName;      //string containing the target port name
     std::string outLandmarksPortName;   //string containing the target port name
-    std::string outImgLefteyePortName;
-    std::string outImgRighteyePortName;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageInPort;            //input image ports
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutPort;           //output port Image
     yarp::os::BufferedPort<yarp::os::Bottle>                            targetOutPort;          //target port
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
+<<<<<<< HEAD
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutLefteyePort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
     yarp::os::RpcClient camPort;
@@ -116,14 +115,16 @@ private:
     float cx;
     float cy;
     /* bool getCameraOptions(); */
+=======
+>>>>>>> 384c9ea
 
     cv::Mat                             imgMat;
 
-    //dlib::frontal_face_detector         faceDetector;
-    //dlib::shape_predictor               sp;
-    //cv::Scalar                          color;
+    dlib::frontal_face_detector         faceDetector;
+    dlib::shape_predictor               sp;
+    cv::Scalar                          color;
 
-//    cv::Point                           leftEye, rightEye;
+    cv::Point                           leftEye, rightEye;
 
     //void    drawLandmarks(cv::Mat &mat, const dlib::full_object_detection &d);
 
@@ -199,7 +200,7 @@ public:
     /**
      * function that handles an IDL message - display on/off
      */
-    //bool display(const std::string& element, const std::string& value);
+    bool display(const std::string& element, const std::string& value);
     /**
      * function that handles an IDL message - quit
      */

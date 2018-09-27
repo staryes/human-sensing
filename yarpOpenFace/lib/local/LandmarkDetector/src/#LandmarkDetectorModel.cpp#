@@ -56,6 +56,7 @@ using namespace LandmarkDetector;
 // A default constructor
 CLNF::CLNF()
 {
+
 	FaceModelParameters parameters;
 
 	// A successful read wil set this to true
@@ -634,11 +635,7 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, FaceModelParameters& pa
 	bool fit_success = Fit(gray_image_flt, params.window_sizes_current, params);
 
 	// Store the landmarks converged on in detected_landmarks
-<<<<<<< HEAD
-    pdm.CalcShape2D(detected_landmarks, params_local, params_global);
-=======
 	pdm.CalcShape2D(detected_landmarks, params_local, params_global);	
->>>>>>> 384c9ea
 
 	if(params.refine_hierarchical && hierarchical_models.size() > 0)
 	{
@@ -1226,10 +1223,6 @@ cv::Mat_<float> CLNF::GetShape(float fx, float fy, float cx, float cy) const
 		outShape.at<float>(i,2) = Z;
 
 	}
-    // XXX
-    // std::cout << "fxfycxcy " << fx << " " << fy << " " << cx << " " << cy << endl ;
-    // std::cout << "image pupil: " << this->detected_landmarks.at<float>(0) << " " << this->detected_landmarks.at<float>(n) << endl ;
-    // std::cout << "image pupil 3D: " <<outShape.at<float>(0,0) << " " << outShape.at<float>(0,1) << " " << outShape.at<float>(0,2 )<< endl ;
 
 	// The format is 3 rows - n cols
 	return outShape.t();
