@@ -105,7 +105,7 @@ private:
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutPort;           //output port Image
     yarp::os::BufferedPort<yarp::os::Bottle>                            targetOutPort;          //target port
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
-<<<<<<< HEAD
+
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutLefteyePort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
     yarp::os::RpcClient camPort;
@@ -115,14 +115,12 @@ private:
     float cx;
     float cy;
     /* bool getCameraOptions(); */
-=======
->>>>>>> 384c9ea
 
     cv::Mat                             imgMat;
 
-    dlib::frontal_face_detector         faceDetector;
-    dlib::shape_predictor               sp;
-    cv::Scalar                          color;
+    //dlib::frontal_face_detector         faceDetector;
+    //dlib::shape_predictor               sp;
+    //cv::Scalar                          color;
 
     cv::Point                           leftEye, rightEye;
 

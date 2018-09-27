@@ -634,11 +634,7 @@ bool CLNF::DetectLandmarks(const cv::Mat_<uchar> &image, FaceModelParameters& pa
 	bool fit_success = Fit(gray_image_flt, params.window_sizes_current, params);
 
 	// Store the landmarks converged on in detected_landmarks
-<<<<<<< HEAD
     pdm.CalcShape2D(detected_landmarks, params_local, params_global);
-=======
-	pdm.CalcShape2D(detected_landmarks, params_local, params_global);	
->>>>>>> 384c9ea
 
 	if(params.refine_hierarchical && hierarchical_models.size() > 0)
 	{
@@ -892,8 +888,8 @@ void CLNF::NonVectorisedMeanShift_precalc_kde(cv::Mat_<float>& out_mean_shifts, 
 			dx = resp_size - step_size;
 		if(dy > resp_size - step_size)
 			dy = resp_size - step_size;
-		
-		// Pick the row from precalculated kde that approximates the current dx, dy best		
+
+		// Pick the row from precalculated kde that approximates the current dx, dy best
 		int closest_col = (int)(dy /step_size + 0.5); // Plus 0.5 is there, as C++ rounds down with int cast
 		int closest_row = (int)(dx /step_size + 0.5); // Plus 0.5 is there, as C++ rounds down with int cast
 		
@@ -938,7 +934,7 @@ void CLNF::NonVectorisedMeanShift_precalc_kde(cv::Mat_<float>& out_mean_shifts, 
 
 void CLNF::GetWeightMatrix(cv::Mat_<float>& WeightMatrix, int scale, int view_id, const FaceModelParameters& parameters)
 {
-	int n = pdm.NumberOfPoints();  
+	int n = pdm.NumberOfPoints();
 
 	// Is the weight matrix needed at all
 	if(parameters.weight_factor > 0)
@@ -994,7 +990,7 @@ float CLNF::NU_RLMS(cv::Vec6f& final_global, cv::Mat_<float>& final_local, const
 				  const FaceModelParameters& parameters, bool compute_lhood)
 {		
 
-	int n = pdm.NumberOfPoints();  
+	int n = pdm.NumberOfPoints();
 	
 	// Mean, eigenvalues, eigenvectors
 	cv::Mat_<float> M = this->pdm.mean_shape;
@@ -1129,7 +1125,7 @@ float CLNF::NU_RLMS(cv::Vec6f& final_global, cv::Mat_<float>& final_local, const
 		cv::solve(Hessian, J_w_t_m, param_update, CV_CHOLESKY);
 		
 		// update the reference
-		pdm.UpdateModelParameters(param_update, current_local, current_global);		
+		pdm.UpdateModelParameters(param_update, current_local, current_global);
 		
 		// clamp to the local parameters for valid expressions
 		pdm.Clamp(current_local, current_global, parameters);

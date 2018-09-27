@@ -4,15 +4,10 @@
 //
 // ACADEMIC OR NON-PROFIT ORGANIZATION NONCOMMERCIAL RESEARCH USE ONLY
 //
-<<<<<<< HEAD
 // BY USING OR DOWNLOADING THE SOFTWARE, YOU ARE AGREEING TO THE TERMS OF THIS
 // LICENSE AGREEMENT.
 // IF YOU DO NOT AGREE WITH THESE TERMS, YOU MAY NOT USE OR DOWNLOAD THE
 // SOFTWARE.
-=======
-// BY USING OR DOWNLOADING THE SOFTWARE, YOU ARE AGREEING TO THE TERMS OF THIS LICENSE AGREEMENT.  
-// IF YOU DO NOT AGREE WITH THESE TERMS, YOU MAY NOT USE OR DOWNLOAD THE SOFTWARE.
->>>>>>> 384c9ea
 //
 // License can be found in OpenFace-license.txt
 //
@@ -21,15 +16,10 @@
 //       reports and manuals, must cite at least one of the following works:
 //
 //       OpenFace 2.0: Facial Behavior Analysis Toolkit
-<<<<<<< HEAD
 //       Tadas Baltrušaitis, Amir Zadeh, Yao Chong Lim, and Louis-Philippe
 //       Morency
 //       in IEEE International Conference on Automatic Face and Gesture
 //       Recognition, 2018
-=======
-//       Tadas Baltrušaitis, Amir Zadeh, Yao Chong Lim, and Louis-Philippe Morency
-//       in IEEE International Conference on Automatic Face and Gesture Recognition, 2018  
->>>>>>> 384c9ea
 //
 //       Convolutional experts constrained local model for facial landmark
 //       detection.
@@ -37,7 +27,6 @@
 //       in Computer Vision and Pattern Recognition Workshops, 2017.    
 //
 //       Rendering of Eyes for Eye-Shape Registration and Gaze Estimation
-<<<<<<< HEAD
 //       Erroll Wood, Tadas Baltrušaitis, Xucong Zhang, Yusuke Sugano, Peter
 //       Robinson, and Andreas Bulling
 //       in IEEE International. Conference on Computer Vision (ICCV),  2015
@@ -48,15 +37,6 @@
 //       in Facial Expression Recognition and Analysis Challenge,
 //       IEEE International Conference on Automatic Face and Gesture
 //       Recognition, 2015
-=======
-//       Erroll Wood, Tadas Baltrušaitis, Xucong Zhang, Yusuke Sugano, Peter Robinson, and Andreas Bulling 
-//       in IEEE International. Conference on Computer Vision (ICCV),  2015 
-//
-//       Cross-dataset learning and person-specific normalisation for automatic Action Unit detection
-//       Tadas Baltrušaitis, Marwa Mahmoud, and Peter Robinson 
-//       in Facial Expression Recognition and Analysis Challenge, 
-//       IEEE International Conference on Automatic Face and Gesture Recognition, 2015 
->>>>>>> 384c9ea
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -103,18 +83,11 @@ cv::Point3f RaySphereIntersect(cv::Point3f rayOrigin, cv::Point3f rayDir,
   return rayOrigin + rayDir * t;
 }
 
-<<<<<<< HEAD
 cv::Point3f GazeAnalysis::GetPupilPosition(cv::Mat_<float> eyeLdmks3d) {
   eyeLdmks3d = eyeLdmks3d.t();
-=======
-cv::Point3f GazeAnalysis::GetPupilPosition(cv::Mat_<float> eyeLdmks3d){
-	
-	eyeLdmks3d = eyeLdmks3d.t();
->>>>>>> 384c9ea
 
   cv::Mat_<float> irisLdmks3d = eyeLdmks3d.rowRange(0, 8);
 
-<<<<<<< HEAD
   cv::Point3f p(mean(irisLdmks3d.col(0))[0], mean(irisLdmks3d.col(1))[0],
                 mean(irisLdmks3d.col(2))[0]);
 
@@ -122,10 +95,6 @@ cv::Point3f GazeAnalysis::GetPupilPosition(cv::Mat_<float> eyeLdmks3d){
   // //test print
 
   return p;
-=======
-	cv::Point3f p (mean(irisLdmks3d.col(0))[0], mean(irisLdmks3d.col(1))[0], mean(irisLdmks3d.col(2))[0]);
-	return p;
->>>>>>> 384c9ea
 }
 
 cv::Point3f GazeAnalysis::GetPupilPositionR1(cv::Mat_<float> eyeLdmks3d,
@@ -149,25 +118,7 @@ cv::Point3f GazeAnalysis::GetPupilPositionR1(cv::Mat_<float> eyeLdmks3d,
   //           << endl;  // test print
   // std::cout << "2d: " << pupil2d.x << " " << pupil2d.y << endl;
 
-<<<<<<< HEAD
   return p;
-=======
-	cv::Mat offset = (cv::Mat_<float>(3, 1) << 0, -3.5, 7.0);
-
-	int eyeIdx = 1;
-	if (left_eye)
-	{
-		eyeIdx = 0;
-	}
-
-	cv::Mat eyeballCentreMat = (faceLdmks3d.row(36+eyeIdx*6) + faceLdmks3d.row(39+eyeIdx*6))/2.0f + (cv::Mat(rotMat)*offset).t();
-
-	cv::Point3f eyeballCentre = cv::Point3f(eyeballCentreMat);
-
-	cv::Point3f gazeVecAxis = RaySphereIntersect(cv::Point3f(0,0,0), rayDir, eyeballCentre, 12) - eyeballCentre;
-	
-	gaze_absolute = gazeVecAxis / norm(gazeVecAxis);
->>>>>>> 384c9ea
 }
 
 void GazeAnalysis::EstimateGaze(const LandmarkDetector::CLNF& clnf_model,
@@ -289,9 +240,5 @@ cv::Vec2f GazeAnalysis::GetGazeAngle(cv::Point3f& gaze_vector_1,
   double x_angle = atan2(gaze_vector.x, -gaze_vector.z);
   double y_angle = atan2(gaze_vector.y, -gaze_vector.z);
 
-<<<<<<< HEAD
   return cv::Vec2f(x_angle, y_angle);
 }
-=======
-}
->>>>>>> 384c9ea
