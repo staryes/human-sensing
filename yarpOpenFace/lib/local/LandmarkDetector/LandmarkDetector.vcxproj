@@ -124,7 +124,7 @@ xcopy /I /E /Y /D "$(SolutionDir)lib\3rdParty\OpenCV3.4\classifiers" "$(OutDir)c
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/Zm300 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -148,7 +148,7 @@ xcopy /I /E /Y /D "$(SolutionDir)lib\3rdParty\OpenCV3.4\classifiers" "$(OutDir)c
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/Zm300 %(AdditionalOptions)</AdditionalOptions>
@@ -173,7 +173,7 @@ xcopy /I /E /Y /D "$(SolutionDir)lib\3rdParty\OpenCV3.4\classifiers" "$(OutDir)c
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OpenMPSupport>false</OpenMPSupport>
       <AdditionalOptions>/Zm300 %(AdditionalOptions)</AdditionalOptions>
@@ -271,9 +271,6 @@ xcopy /I /E /Y /D "$(SolutionDir)lib\3rdParty\OpenCV3.4\classifiers" "$(OutDir)c
     <ClInclude Include="include\SVR_patch_expert.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\3rdParty\dlib\dlib.vcxproj">
-      <Project>{b47a5f12-2567-44e9-ae49-35763ec82149}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.vcxproj">
       <Project>{8e741ea2-9386-4cf2-815e-6f9b08991eac}</Project>
     </ProjectReference>

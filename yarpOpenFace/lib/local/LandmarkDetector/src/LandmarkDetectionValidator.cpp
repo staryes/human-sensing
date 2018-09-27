@@ -344,9 +344,15 @@ float DetectionValidator::Check(const cv::Vec3d& orientation, const cv::Mat_<uch
 	xs = xs - min_x;
 	ys = ys - min_y;
 
+	// If the ROI is non existent return failure (this could happen if all landmarks are outside of the image)
+	if (max_x - min_x <= 1 || max_y - min_y <= 1)
+	{
+		return 0.0f;
+	}
+
 	cv::Mat_<float> intensity_img_float_local;
 	intensity_img(cv::Rect(min_x, min_y, max_x - min_x, max_y - min_y)).convertTo(intensity_img_float_local, CV_32F);
-	
+
 	// the piece-wise affine image warping
 	paws[id].Warp(intensity_img_float_local, warped, detected_landmarks_local);
 
@@ -409,7 +415,7 @@ double DetectionValidator::CheckCNN(const cv::Mat_<float>& warped_img, int view_
 		if (layer_type == 0)
 		{
 
-			convolution_direct_blas_nts(outputs, input_maps, cnn_convolutional_layers_weights[view_id][cnn_layer], cnn_convolutional_layers[view_id][cnn_layer][0][0].rows, cnn_convolutional_layers[view_id][cnn_layer][0][0].cols, cnn_convolutional_layers_im2col_precomp[view_id][cnn_layer]);
+			convolution_direct_blas(outputs, input_maps, cnn_convolutional_layers_weights[view_id][cnn_layer], cnn_convolutional_layers[view_id][cnn_layer][0][0].rows, cnn_convolutional_layers[view_id][cnn_layer][0][0].cols, cnn_convolutional_layers_im2col_precomp[view_id][cnn_layer]);
 
 			cnn_layer++;
 		}

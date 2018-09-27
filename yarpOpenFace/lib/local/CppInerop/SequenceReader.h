@@ -37,26 +37,22 @@
 
 // Include all the unmanaged things we need.
 
-#include <opencv2/core/core.hpp>
-#include "opencv2/objdetect.hpp"
-#include "opencv2/calib3d.hpp"
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 #include <vector>
 #include <set>
+#include <string>
 
 #include <OpenCVWrappers.h>
 #include <ImageReader.h>
-
-#include "DeviceEnumerator.h"
-
-#include "SequenceCapture.h"
+#include <DeviceEnumerator.h>
+#include <SequenceCapture.h>
 
 #pragma managed
 
 #include <msclr\marshal.h>
 #include <msclr\marshal_cppstd.h>
+
+using namespace System::Collections::Generic;
 
 namespace UtilitiesOF {
 
@@ -148,17 +144,7 @@ namespace UtilitiesOF {
 		OpenCVWrappers::RawImage^ GetNextImage()
 		{
 			cv::Mat next_image = m_sequence_capture->GetNextFrame();
-
-			if (m_rgb_frame == nullptr)
-			{
-				m_rgb_frame = gcnew OpenCVWrappers::RawImage(next_image.size().width, next_image.size().height, CV_8UC3);
-			}
-			else if (m_rgb_frame->Mat.size().width != next_image.size().width || m_rgb_frame->Mat.size().height != next_image.size().height)
-			{
-				m_rgb_frame = gcnew OpenCVWrappers::RawImage(next_image.size().width, next_image.size().height, CV_8UC3);
-			}
-
-			next_image.copyTo(m_rgb_frame->Mat);
+			m_rgb_frame = gcnew OpenCVWrappers::RawImage(next_image);
 
 			return m_rgb_frame;
 		}
@@ -166,17 +152,7 @@ namespace UtilitiesOF {
 		OpenCVWrappers::RawImage^ GetCurrentFrameGray() {
 
 			cv::Mat_<uchar> next_gray_image = m_sequence_capture->GetGrayFrame();
-
-			if (m_gray_frame == nullptr)
-			{
-				m_gray_frame = gcnew OpenCVWrappers::RawImage(next_gray_image.size().width, next_gray_image.size().height, CV_8U);
-			}
-			else if (m_gray_frame->Mat.size().width != next_gray_image.size().width || m_gray_frame->Mat.size().height != next_gray_image.size().height)
-			{
-				m_gray_frame = gcnew OpenCVWrappers::RawImage(next_gray_image.size().width, next_gray_image.size().height, CV_8U);
-			}
-
-			next_gray_image.copyTo(m_gray_frame->Mat);
+			m_gray_frame = gcnew OpenCVWrappers::RawImage(next_gray_image);
 			
 			return m_gray_frame;
 		}
@@ -271,7 +247,7 @@ namespace UtilitiesOF {
 	
 	private:
 		// Static methods for listing cameras and their resolutions
-		static void split(const std::string &s, char delim, std::vector<string> &elems) {
+		static void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 			std::stringstream ss;
 			ss.str(s);
 			std::string item;
@@ -299,7 +275,7 @@ namespace UtilitiesOF {
 				auto resolutions = gcnew System::Collections::Generic::List<System::Tuple<int, int>^>();
 				for (size_t r_idx = 0; r_idx < resolution_list.size(); r_idx++)
 				{
-					string res = resolution_list[r_idx]["res"];
+					std::string res = resolution_list[r_idx]["res"];
 
 					std::vector<std::string> elems;
 					split(res, 'x', elems);
@@ -329,7 +305,7 @@ namespace UtilitiesOF {
 				auto resolutions = camera_list[name_m];
 				for (int j = 0; j < resolutions->Count; j++)
 				{
-					stringstream ss;
+					std::stringstream ss;
 					ss << resolutions[j]->Item1 << "x" << resolutions[j]->Item2;
 
 					fs << "{:" << "res" << ss.str();

@@ -45,29 +45,16 @@
 
 // Include all the unmanaged things we need.
 
-#include <opencv2/core/core.hpp>
-#include "opencv2/objdetect.hpp"
-#include "opencv2/calib3d.hpp"
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-// Allows to overcome boost name clash stuff with C++ CLI
-#ifdef __cplusplus_cli
-#define generic __identifier(generic)
-#endif
+#include <opencv2/opencv.hpp>
 
 #include <OpenCVWrappers.h>
 
+#undef _M_CEE
 #include <LandmarkCoreIncludes.h>
-
 #include <Face_utils.h>
 #include <FaceAnalyser.h>
 #include <VisualizationUtils.h>
-
-#ifdef __cplusplus_cli
-#undef generic
-#endif
+#define _M_CEE
 
 using namespace System::Collections::Generic;
 
@@ -391,7 +378,7 @@ namespace CppInterop {
 				
 				auto landmarks_3D = gcnew List<System::Tuple<float, float, float>^>();
 				
-				for(int i = 0; i < shape3D.cols; ++i)
+				for(int i = 0; i < shape3D.cols; ++i) 
 				{
 					landmarks_3D->Add(gcnew System::Tuple<float, float, float>(shape3D.at<float>(0, i), shape3D.at<float>(1, i), shape3D.at<float>(2, i)));
 				}
