@@ -45,7 +45,7 @@ else()
     MESSAGE("  OpenBLAS_INCLUDE: ${OpenBLAS_INCLUDE_DIR}")
 endif()
 
-find_package( OpenCV 3.3 REQUIRED COMPONENTS core imgproc calib3d highgui objdetect)
+find_package( OpenCV 3.3 REQUIRED COMPONENTS core imgproc calib3d highgui objdetect video)
 if(${OpenCV_FOUND})
 	MESSAGE("OpenCV information:")
 	MESSAGE("  OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
@@ -244,7 +244,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL "${CMAKE_SOURCE_DIR}")
     foreach(lib ${OpenFace_LIBRARIES})
       if(TARGET ${lib})
         get_target_property(libname ${lib} "NAME")
-        file(RELATIVE_PATH rel_incdir ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/lib/local/${libname}/include")
+        file(RELATIVE_PATH rel_incdir ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/yarpOpenFace/lib/local/${libname}/include")
         list(APPEND OPENFACE_INCLUDE_DIRS ${rel_incdir})
       endif()
     endforeach()
@@ -308,15 +308,15 @@ set(doc ${PROJECT_NAME}.xml)
 
 source_group("Source Files" FILES ${source})
 source_group("Header Files" FILES ${header})
-#source_group("Source Files" FILES ${DLIB_SRC})
+source_group("Source Files" FILES ${DLIB_SRC})
 source_group("IDL Files" FILES ${idl})
 source_group("DOC Files" FILES ${doc})
 
 include_directories(${PROJECT_SOURCE_DIR}/include
-                    #${OpenCV_INCLUDE_DIRS}
+                    ${OpenCV_INCLUDE_DIRS}
                     ${YARP_INCLUDE_DIRS}
                     ${ICUB_INCLUDE_DIRS}
-                    #${dlib_INCLUDE_DIRS}
+                    ${dlib_INCLUDE_DIRS}
                     )
 
 #################################################
@@ -324,7 +324,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
 include_directories(${TBB_ROOT_DIR}/include)
 
 #OpenBlas library
-include_directories(${BLAS_ROOT_DIR})
+#include_directories(${BLAS_ROOT_DIR})
 include_directories(lib/3rdParty/OpenBLAS/include)
 
 # Local libraries
