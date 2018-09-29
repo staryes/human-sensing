@@ -34,11 +34,11 @@
 #include <yarp/sig/Image.h>
 
 // OpenFace essential
-// dlib
-#include <dlib/image_processing/frontal_face_detector.h>
-
 // OpenBLAS
 #include <cblas.h>
+
+// dlib
+#include <dlib/image_processing/frontal_face_detector.h>
 
 #include "LandmarkCoreIncludes.h"
 

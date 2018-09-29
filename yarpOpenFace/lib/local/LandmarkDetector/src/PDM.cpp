@@ -146,7 +146,8 @@ void PDM::CalcShape3D(cv::Mat_<float>& out_shape, const cv::Mat_<float>& p_local
 	int p_local_cols = p_local.cols;
 	int princ_comp_rows = princ_comp.rows;
 	int princ_comp_cols = princ_comp.cols;
-	sgemm_("N", "N", &p_local_cols, &princ_comp_rows, &princ_comp_cols, &alpha1, (float*)p_local.data, &p_local_cols, (float*)princ_comp.data, &princ_comp_cols, &beta1, (float*)out_shape.data, &p_local_cols);
+	char N[2]; N[0] = 'N';
+	sgemm_(N, N, &p_local_cols, &princ_comp_rows, &princ_comp_cols, &alpha1, (float*)p_local.data, &p_local_cols, (float*)princ_comp.data, &princ_comp_cols, &beta1, (float*)out_shape.data, &p_local_cols);
 
 	// Above is a fast (but ugly) version of 
 	// out_shape = mean_shape + princ_comp * p_local;	 
@@ -207,7 +208,7 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, const cv::Rect_<float>& bound
 	// Get the width of expected shape
 	double min_x;
 	double max_x;
-	cv::minMaxLoc(rotated_shape.row(0), &min_x, &max_x);
+	cv::minMaxLoc(rotated_shape.row(0), &min_x, &max_x);	
 
 	double min_y;
 	double max_y;
@@ -222,7 +223,7 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, const cv::Rect_<float>& bound
 	float tx = bounding_box.x + bounding_box.width / 2;
 	float ty = bounding_box.y + bounding_box.height / 2;
 
-	// Correct it so that the bounding box is just around the minimum and maximum point in the initialised face
+	// Correct it so that the bounding box is just around the minimum and maximum point in the initialised face	
 	tx = tx - scaling * (min_x + max_x)/2.0f;
     ty = ty - scaling * (min_y + max_y)/2.0f;
 
@@ -573,7 +574,7 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, cv::Mat_<float>& out_params_l
 	float height = abs(min_y - max_y);
 
 	cv::Rect_<float> model_bbox;
-	CalcBoundingBox(model_bbox, cv::Vec6f(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), cv::Mat_<double>(this->NumberOfModes(), 1, 0.0));
+	CalcBoundingBox(model_bbox, cv::Vec6f(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), cv::Mat_<float>(this->NumberOfModes(), 1, 0.0));
 
 	cv::Rect_<float> bbox(min_x, min_y, width, height);
 
@@ -645,7 +646,8 @@ void PDM::CalcParams(cv::Vec6f& out_params_global, cv::Mat_<float>& out_params_l
 		// Perform matrix multiplication in OpenBLAS (fortran call)
 		float alpha1 = 1.0;
 		float beta1 = 1.0;
-		sgemm_("N", "N", &J.cols, &J_w_t.rows, &J_w_t.cols, &alpha1, (float*)J.data, &J.cols, (float*)J_w_t.data, &J_w_t.cols, &beta1, (float*)Hessian.data, &J.cols);
+		char N[2]; N[0] = 'N';
+		sgemm_(N, N, &J.cols, &J_w_t.rows, &J_w_t.cols, &alpha1, (float*)J.data, &J.cols, (float*)J_w_t.data, &J_w_t.cols, &beta1, (float*)Hessian.data, &J.cols);
 
 		// Above is a fast (but ugly) version of 
 		// cv::Mat_<float> Hessian2 = J_w_t * J + regularisations;

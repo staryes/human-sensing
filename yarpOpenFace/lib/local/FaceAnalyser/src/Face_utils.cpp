@@ -43,10 +43,6 @@
 #include <dlib/opencv.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 
-// OpenBLAS
-#include <cblas.h>
-#include <f77blas.h>
-
 using namespace std;
 
 namespace FaceAnalysis

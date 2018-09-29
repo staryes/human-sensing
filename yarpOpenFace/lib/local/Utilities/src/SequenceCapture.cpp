@@ -173,15 +173,15 @@ bool SequenceCapture::Open(std::vector<std::string>& arguments)
 		{
 			arguments.erase(arguments.begin() + i);
 		}
-	}
-
+	}	
+	
 	no_input_specified = !file_found;
 
 	// Based on what was read in open the sequence
 	if (device != -1)
 	{
-        return OpenWebcam(device, cam_width, cam_height, fx, fy, cx, cy);
-    }
+		return OpenWebcam(device, cam_width, cam_height, fx, fy, cx, cy);
+	}
 	if (!input_video_file.empty())
 	{
 		return OpenVideoFile(input_video_file, fx, fy, cx, cy);
@@ -262,7 +262,7 @@ bool SequenceCapture::OpenWebcam(int device, int image_width, int image_height, 
 		INFO_STREAM("FPS of the webcam cannot be determined, assuming 30");
 		fps = 30;
 	}
-
+	
 	SetCameraIntrinsics(fx, fy, cx, cy);
 	std::string time = currentDateTime();
 	this->name = "webcam_" + time;
@@ -271,6 +271,7 @@ bool SequenceCapture::OpenWebcam(int device, int image_width, int image_height, 
 	capturing = true;
 
 	return true;
+
 }
 
 void SequenceCapture::Close()

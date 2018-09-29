@@ -38,10 +38,6 @@
 #include <dlib/opencv.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 
-// OpenBLAS
-#include <cblas.h>
-#include <f77blas.h>
-
 // For drawing on images
 #include <opencv2/imgproc.hpp>
 
@@ -162,7 +158,7 @@ namespace Utilities
 			// Only draw the line if one of the points is inside the image
 			if (p1.inside(image_rect) || p2.inside(image_rect))
 			{
-				cv::line(image, p1, p2, color, thickness, CV_AA);
+				cv::line(image, p1, p2, color, thickness, cv::LINE_AA);
 			}
 
 		}

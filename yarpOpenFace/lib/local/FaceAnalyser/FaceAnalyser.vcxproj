@@ -56,8 +56,8 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\3rdParty\dlib\dlib.props" />
-    <Import Project="..\..\3rdParty\boost\boost_d.props" />
     <Import Project="..\..\3rdParty\tbb\tbb_d.props" />
+    <Import Project="..\..\3rdParty\boost\boost_d.props" />
     <Import Project="..\..\3rdParty\OpenBLAS\OpenBLAS.props" />
     <Import Project="..\..\3rdParty\OpenCV3.4\openCV3.4.props" />
   </ImportGroup>
@@ -118,7 +118,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
       <AdditionalIncludeDirectories>./include;$(SolutionDir)lib/local/Utilities/include;$(SolutionDir)lib/local/LandmarkDetector/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>WIN64;_DEBUG;_LIB;EIGEN_MPL2_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -141,7 +141,7 @@
       <SDLCheck>
       </SDLCheck>
       <AdditionalIncludeDirectories>./include;$(SolutionDir)lib/local/Utilities/include;$(SolutionDir)lib/local/LandmarkDetector/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -167,7 +167,7 @@
       <SDLCheck>
       </SDLCheck>
       <AdditionalIncludeDirectories>./include;$(SolutionDir)lib/local/Utilities/include;$(SolutionDir)lib/local/LandmarkDetector/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>WIN64;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -186,9 +186,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\3rdParty\dlib\dlib.vcxproj">
-      <Project>{b47a5f12-2567-44e9-ae49-35763ec82149}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\LandmarkDetector\LandmarkDetector.vcxproj">
       <Project>{bdc1d107-de17-4705-8e7b-cdde8bfb2bf8}</Project>
     </ProjectReference>

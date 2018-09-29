@@ -43,9 +43,6 @@
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/opencv.h>
 
-// OpenBLAS
-#include <cblas.h>
-
 #include "PDM.h"
 #include "Patch_experts.h"
 #include "LandmarkDetectionValidator.h"

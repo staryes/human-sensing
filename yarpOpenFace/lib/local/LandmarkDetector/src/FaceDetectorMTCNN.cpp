@@ -64,6 +64,16 @@
 // CNN includes
 #include "CNN_utils.h"
 
+// Instead of including cblas.h (the definitions from OpenBLAS and other BLAS libraries differ, declare the required OpenBLAS functionality here)
+#ifdef __cplusplus
+extern "C" {
+	/* Assume C declarations for C++ */
+#endif  /* __cplusplus */
+
+	/*Set the number of threads on runtime.*/
+	void openblas_set_num_threads(int num_threads);
+}
+
 using namespace LandmarkDetector;
 
 // Constructor from model file location
@@ -167,12 +177,12 @@ std::vector<cv::Mat_<float>> CNN::Inference(const cv::Mat& input_img, bool direc
 			{
 				if(thread_safe)
 				{
-					// Thread safe option does not use pre-allocated data of where to store convolution result
-					convolution_direct_blas(outputs, input_maps, cnn_convolutional_layers_weights[cnn_layer], cnn_convolutional_layers[cnn_layer][0][0].rows, cnn_convolutional_layers[cnn_layer][0][0].cols);
+					cv::Mat_<float> pre_alloc;
+					convolution_direct_blas(outputs, input_maps, cnn_convolutional_layers_weights[cnn_layer], cnn_convolutional_layers[cnn_layer][0][0].rows, cnn_convolutional_layers[cnn_layer][0][0].cols, pre_alloc);
 				}
 				else
 				{
-					convolution_direct_blas_nts(outputs, input_maps, cnn_convolutional_layers_weights[cnn_layer], cnn_convolutional_layers[cnn_layer][0][0].rows, cnn_convolutional_layers[cnn_layer][0][0].cols, conv_layer_pre_alloc_im2col[cnn_layer]);
+					convolution_direct_blas(outputs, input_maps, cnn_convolutional_layers_weights[cnn_layer], cnn_convolutional_layers[cnn_layer][0][0].rows, cnn_convolutional_layers[cnn_layer][0][0].cols, conv_layer_pre_alloc_im2col[cnn_layer]);
 				}
 	
 			}
@@ -262,9 +272,7 @@ void CNN::ClearPrecomp()
 void CNN::Read(const string& location)
 {
 
-	#ifndef __APPLE__
-		openblas_set_num_threads(1);
-	#endif
+	openblas_set_num_threads(1);
 
 	ifstream cnn_stream(location, ios::in | ios::binary);
 	if (cnn_stream.is_open())
@@ -654,7 +662,7 @@ bool FaceDetectorMTCNN::DetectFaces(vector<cv::Rect_<float> >& o_regions, const 
 	// Force the image to three channels
 	if (img_in.channels() == 1)
 	{
-		cv::cvtColor(img_in, input_img, CV_GRAY2RGB);
+		cv::cvtColor(img_in, input_img, cv::COLOR_GRAY2RGB);
 	}
 	else
 	{
@@ -688,7 +696,7 @@ bool FaceDetectorMTCNN::DetectFaces(vector<cv::Rect_<float> >& o_regions, const 
 		normalised_img = (normalised_img - 127.5) * 0.0078125;
 
 		// Actual PNet CNN step
-		std::vector<cv::Mat_<float> > pnet_out = PNet.Inference(normalised_img, true);
+		std::vector<cv::Mat_<float> > pnet_out = PNet.Inference(normalised_img, true, false);
 
 		// Clear the precomputations, as the image sizes will be different
 		PNet.ClearPrecomp();
@@ -767,7 +775,7 @@ bool FaceDetectorMTCNN::DetectFaces(vector<cv::Rect_<float> >& o_regions, const 
 		prop_img = (prop_img - 127.5) * 0.0078125;
 		
 		// Perform RNet on the proposal image
-		std::vector<cv::Mat_<float> > rnet_out = RNet.Inference(prop_img, true);
+		std::vector<cv::Mat_<float> > rnet_out = RNet.Inference(prop_img, true, false);
 
 		float prob = 1.0 / (1.0 + cv::exp(rnet_out[0].at<float>(0) - rnet_out[0].at<float>(1)));
 		scores_all[k] = prob;
@@ -840,7 +848,7 @@ bool FaceDetectorMTCNN::DetectFaces(vector<cv::Rect_<float> >& o_regions, const 
 		prop_img = (prop_img - 127.5) * 0.0078125;
 
 		// Perform RNet on the proposal image
-		std::vector<cv::Mat_<float> > onet_out = ONet.Inference(prop_img, true);
+		std::vector<cv::Mat_<float> > onet_out = ONet.Inference(prop_img, true, false);
 
 		float prob = 1.0 / (1.0 + cv::exp(onet_out[0].at<float>(0) - onet_out[0].at<float>(1)));
 		scores_all[k] = prob;
