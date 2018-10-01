@@ -2,7 +2,7 @@
 # Author: Vadim Tikhanoff
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 #
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 project(yarpOpenFace)
 
 find_package(YARP)

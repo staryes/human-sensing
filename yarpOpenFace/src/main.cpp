@@ -32,7 +32,7 @@
 
 #include <iCub/iKin/iKinFwd.h>
 
-#include <cer_kinematics/head.h>
+//#include <cer_kinematics/head.h>
 
 using namespace std;
 using namespace yarp::os;
