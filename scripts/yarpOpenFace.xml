@@ -22,7 +22,7 @@
     <module>
       <name>yarpdev</name>
       <node>localhost</node>
-      <parameters>--device opencv_grabber</parameters>
+      <parameters>--device opencv_grabber --width 320 --height 240</parameters>
     </module>
 
     <connection>

@@ -363,9 +363,9 @@ void Visualizer::SetObservationGaze(const cv::Point3f& gaze_direction0, const cv
 
 				cv::Point nextFeaturePoint(cvRound(eye_landmarks2d[next_point].x * (double)draw_multiplier), cvRound(eye_landmarks2d[next_point].y * (double)draw_multiplier));
 				if ((i < 28 && (i < 8 || i > 19)) || (i >= 28 && (i < 8 + 28 || i > 19 + 28)))
-					cv::line(captured_image, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, cv::LINE_AA, draw_shiftbits);
+					cv::line(captured_image, featurePoint, nextFeaturePoint, cv::Scalar(255, 0, 0), thickness_2, CV_AA, draw_shiftbits);
 				else
-					cv::line(captured_image, featurePoint, nextFeaturePoint, cv::Scalar(0, 0, 255), thickness_2, cv::LINE_AA, draw_shiftbits);
+					cv::line(captured_image, featurePoint, nextFeaturePoint, cv::Scalar(0, 0, 255), thickness_2, CV_AA, draw_shiftbits);
 
 			}
 
@@ -374,7 +374,7 @@ void Visualizer::SetObservationGaze(const cv::Point3f& gaze_direction0, const cv
 
 			// Grabbing the pupil location, to draw eye gaze need to know where the pupil is
 			cv::Point3f pupil_left(0, 0, 0);
-			cv::Point3f pupil_right(0, 0, 0);
+			cv::Point3f pupil_right(0, 0, 0);  //XXX
 			for (size_t i = 0; i < 8; ++i)
 			{
 				pupil_left = pupil_left + eye_landmarks3d[i];
@@ -395,13 +395,25 @@ void Visualizer::SetObservationGaze(const cv::Point3f& gaze_direction0, const cv
 			cv::Mat_<float> mesh_0 = (cv::Mat_<float>(2, 3) << points_left[0].x, points_left[0].y, points_left[0].z, points_left[1].x, points_left[1].y, points_left[1].z);
 			Project(proj_points, mesh_0, fx, fy, cx, cy);
 			cv::line(captured_image, cv::Point(cvRound(proj_points.at<float>(0, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(0, 1) * (float)draw_multiplier)),
-				cv::Point(cvRound(proj_points.at<float>(1, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(1, 1) * (float)draw_multiplier)), cv::Scalar(110, 220, 0), 2, cv::LINE_AA, draw_shiftbits);
+				cv::Point(cvRound(proj_points.at<float>(1, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(1, 1) * (float)draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, draw_shiftbits);
 
 			cv::Mat_<float> mesh_1 = (cv::Mat_<float>(2, 3) << points_right[0].x, points_right[0].y, points_right[0].z, points_right[1].x, points_right[1].y, points_right[1].z);
 			Project(proj_points, mesh_1, fx, fy, cx, cy);
 			cv::line(captured_image, cv::Point(cvRound(proj_points.at<float>(0, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(0, 1) * (float)draw_multiplier)),
-				cv::Point(cvRound(proj_points.at<float>(1, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(1, 1) * (float)draw_multiplier)), cv::Scalar(110, 220, 0), 2, cv::LINE_AA, draw_shiftbits);
+				cv::Point(cvRound(proj_points.at<float>(1, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(1, 1) * (float)draw_multiplier)), cv::Scalar(110, 220, 0), 2, CV_AA, draw_shiftbits);
 
+            cv::Point3f gaze_center = (pupil_left + pupil_right)/2;
+            cv::Point3f gaze_target = gaze_direction0 + gaze_direction1;
+            gaze_target = gaze_target / norm(gaze_target);
+
+            std::vector<cv::Point3f> points_gaze;
+            points_gaze.push_back(cv::Point3f(gaze_center));
+            points_gaze.push_back(cv::Point3f(gaze_center) + cv::Point3f(gaze_target)*0.5*gaze_center.z);
+
+            cv::Mat_<float> mesh_gaze = (cv::Mat_<float>(2,3) << points_gaze[0].x, points_gaze[0].y, points_gaze[0].z, points_gaze[1].x, points_gaze[1].y, points_gaze[1].z);
+            Project(proj_points, mesh_gaze, fx, fy, cx, cy);
+            cv::line(captured_image, cv::Point(cvRound(proj_points.at<float>(0, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(0, 1) * (float)draw_multiplier)),
+                     cv::Point(cvRound(proj_points.at<float>(1, 0) * (float)draw_multiplier), cvRound(proj_points.at<float>(1, 1) * (float)draw_multiplier)), cv::Scalar(10, 100, 100), 2, CV_AA, draw_shiftbits);
 		}
 	}
 }
