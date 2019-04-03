@@ -4,9 +4,16 @@
     <module>
         <name>yarpview</name>
         <node>localhost</node>
-        <parameters></parameters>
+        <parameters>--name /facelankmarks</parameters>
     </module>
 
+    <module>
+        <name>yarpview</name>
+        <node>localhost</node>
+        <parameters>--name /gaze_vector</parameters>
+    </module>
+
+    
     <module>
         <name>yarpview</name>
         <node>localhost</node>
@@ -22,7 +29,7 @@
     <module>
       <name>yarpdev</name>
       <node>localhost</node>
-      <parameters>--device opencv_grabber --width 320 --height 240</parameters>
+      <parameters>--device opencv_grabber --width 640 --height 480</parameters>
     </module>
 
     <connection>
@@ -32,11 +39,18 @@
     </connection>
 
     <connection>
-    <from>/yarpOpenFace/image:o</from>
-    <to>/yarpview/img:i</to>
-    <protocol>fast_tcp</protocol>
+      <from>/yarpOpenFace/image:o</from>
+      <to>/gaze_vector</to>
+      <protocol>fast_tcp</protocol>
     </connection>
 
+    <connection>
+      <from>/yarpOpenFace/imgfacelandmarks:o</from>
+      <to>/facelankmarks</to>
+      <protocol>fast_tcp</protocol>
+    </connection>
+
+    
     <connection>
     <from>/yarpOpenFace/image:righteye</from>
     <to>/righteye</to>

@@ -147,6 +147,9 @@ bool FACEManager::open() {
     outImgPortName = "/" + moduleName + "/image:o";
     imageOutPort.open(outImgPortName.c_str());
 
+    outImgFaceLandmarksPortName = "/" + moduleName + "/imgfacelandmarks:o";
+    imageFaceLandmarksOutPort.open(outImgFaceLandmarksPortName.c_str());
+
     outTargetPortName = "/" + moduleName + "/target:o";
     targetOutPort.open(outTargetPortName.c_str());
 
@@ -293,6 +296,7 @@ void FACEManager::interrupt() {
 void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     mutex.wait();
     yarp::sig::ImageOf<yarp::sig::PixelRgb> &outImg = imageOutPort.prepare();
+    yarp::sig::ImageOf<yarp::sig::PixelRgb> &outLandmarksImg = imageFaceLandmarksOutPort.prepare();
     yarp::os::Bottle &target = targetOutPort.prepare();
     yarp::os::Bottle &landmarks = landmarksOutPort.prepare();
     target.clear();
@@ -318,6 +322,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     // A utility for visualizing the results
     Utilities::Visualizer visualizer(false, false, false, false);
+    Utilities::Visualizer visual_gaze(false, false, false, false);
 
     cv::Mat rgb_image;
 
@@ -329,8 +334,8 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
 
     //float fx = 450.0;
     //float fy = 460.0;
-    cx = imgMat.cols / 2;
-    cy = imgMat.rows / 2;
+    //cx = imgMat.cols / 2;
+    //cy = imgMat.rows / 2;
 
     if (!face_model->eye_model) {
         cout << "WARNING: no eye model found" << endl;
@@ -346,6 +351,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
     if (!rgb_image.empty()) {
 
         visualizer.SetImage(rgb_image, fx, fy, cx, cy);
+        visual_gaze.SetImage(rgb_image, fx, fy, cx, cy);
 
         // Making sure the image is in uchar grayscale (some face detectors use
         // RGB, landmark detector uses
@@ -507,13 +513,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             //4.update
             kalman_right->correct(*measurement_right);
 
-            std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
+            std::cout << "rightPupil:   " << rightPupil.x << "," << rightPupil.y << endl;
 
             cv::Point stateRightPt = cv::Point( (int)kalman_right->statePost.at<float>(0), (int)kalman_right->statePost.at<float>(1));
 
             rightPupil = stateRightPt;
 
-            std::cout << "rightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
+            std::cout << "KFrightPupil: " << rightPupil.x << "," << rightPupil.y << endl;
 
             cv::circle(rightEye, rightPupil, 3, cv::Scalar(0,255,0));
 
@@ -565,6 +571,22 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
             cv::Point3f gaze_center = (leftEyeballCentre + rightEyeballCentre)/2;
             cv::Point3f gaze_directionAvg = gaze_direction0 + gaze_direction1;
             gaze_directionAvg = gaze_directionAvg / norm(gaze_directionAvg);
+
+            cv::Mat gaze_vector_left(3, 1, CV_32FC1);
+            cv::Mat gaze_vector_right(3, 1, CV_32FC1);
+
+            // gaze_vector_left.at<float>(0, 0) = gaze_direction0.x;
+            // gaze_vector_left.at<float>(1, 0) = gaze_direction0.y;
+            // gaze_vector_left.at<float>(2, 0) = gaze_direction0.z;
+            // gaze_vector_right.at<float>(0, 0) = gaze_direction1.x;
+            // gaze_vector_right.at<float>(1, 0) = gaze_direction1.y;
+            // gaze_vector_right.at<float>(2, 0) = gaze_direction1.z;
+
+            // double dotp = gaze_vector_left.dot(gaze_vector_right);
+            // if (dotp > 1)
+            // {
+            //     dotp = 1.0;
+            // }
             cv::Point3f gaze_point3d = gaze_center + gaze_directionAvg*gaze_center.z*0.5;
 
             std::cout << "gaze center " << gaze_center.x << " " <<gaze_center.y << " " << gaze_center.z << endl;
@@ -602,7 +624,7 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
                                                  // make sure we always
                                                  // visualize
             visualizer.SetObservationPose(pose_estimate, 1.0);
-            visualizer.SetObservationGaze(
+            visual_gaze.SetObservationGaze(
                 gaze_direction0, gaze_direction1,
                 LandmarkDetector::CalculateAllEyeLandmarks(*face_model),
                 LandmarkDetector::Calculate3DEyeLandmarks(*face_model, fx, fy,
@@ -617,7 +639,13 @@ void FACEManager::onRead(yarp::sig::ImageOf<yarp::sig::PixelRgb> &img) {
         }
     }
     //-------------------------
-    IplImage yarpImg = visualizer.GetVisImage();
+    IplImage yarpLandmarksImg = visualizer.GetVisImage();
+    outLandmarksImg.resize(yarpLandmarksImg.width, yarpLandmarksImg.height);
+    cvCopy(&yarpLandmarksImg, (IplImage *)outLandmarksImg.getIplImage());
+
+    imageFaceLandmarksOutPort.write();
+    
+    IplImage yarpImg = visual_gaze.GetVisImage();
 
     targetOutPort.write();
 

@@ -102,6 +102,7 @@ private:
     std::string outLandmarksPortName;   //string containing the target port name
     std::string outImgLefteyePortName;
     std::string outImgRighteyePortName;
+    std::string outImgFaceLandmarksPortName;
 
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageInPort;            //input image ports
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutPort;           //output port Image
@@ -109,12 +110,13 @@ private:
     yarp::os::BufferedPort<yarp::os::Bottle>                            landmarksOutPort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutLefteyePort;
     yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageOutRighteyePort;
+    yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> >    imageFaceLandmarksOutPort;
     yarp::os::RpcClient camPort;
 
-    float fx = 500.0;
-    float fy = 500.0;
-    float cx;
-    float cy;
+    float fx = 483.0;
+    float fy = 483.0;  //need to get better value
+    float cx = 329.0;
+    float cy = 193.97;
     /* bool getCameraOptions(); */
 
     cv::Mat                             imgMat;
